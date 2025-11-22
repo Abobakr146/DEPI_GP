@@ -56,245 +56,243 @@ class CarRoutePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(leading: BackButton(), title: const Text("Car Route")),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: DefaultTabController(
-          length: 2,
-          child: Column(
-            children: [
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                  color: Colors.grey.shade200,
-                ),
-                child: TabBar(
-                  labelColor: Colors.white,
-                  unselectedLabelColor: Colors.black,
-                  indicator: BoxDecoration(
+      appBar: AppBar(title: const Text("Car Route", style: TextStyle(fontWeight: FontWeight.bold))),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: DefaultTabController(
+            length: 2,
+            child: Column(
+              spacing: 8,
+              children: [
+                DecoratedBox(
+                  decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8),
-                    color: Colors.blue,
+                    color: Colors.grey.shade200,
                   ),
-                  tabs: const [
-                    Tab(text: "Text Input"),
-                    Tab(text: "Map Selection"),
-                  ],
+                  child: TabBar(
+                    labelColor: Colors.white,
+                    unselectedLabelColor: Colors.black,
+                    indicator: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                      color: const Color(0xFF0F2CE8),
+                    ),
+                    indicatorSize: TabBarIndicatorSize.tab,
+                    dividerColor: Colors.transparent,
+                    tabs: const [
+                      Tab(text: "Text Input"),
+                      Tab(text: "Map Selection"),
+                    ],
+                  ),
                 ),
-              ),
-              Expanded(
-                child: TabBarView(
-                  children: [
-                    // Text Input Tab
-                    SingleChildScrollView(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          // Starting Point
-                          Card(
-                            margin: const EdgeInsets.only(bottom: 10),
-                            child: ListTile(
-                              title: Text("Starting Point"),
-                              subtitle: TextField(
-                                controller: startController.value,
-                                decoration: InputDecoration(
-                                  hintText: "Enter starting location",
-                                  border: InputBorder.none,
-                                ),
-                                readOnly: false,
-                                onTap: () {
-                                  // TODO: Add geolocation/search logic
-                                },
-                              ),
-                            ),
-                          ),
-                          // Waypoints
-                          Obx(
-                            () => Column(
-                              children: List.generate(
-                                waypoints.length,
-                                (index) => Card(
-                                  margin: const EdgeInsets.only(bottom: 10),
-                                  child: ListTile(
-                                    title: Text("Waypoint ${index + 1}"),
-                                    subtitle: TextField(
-                                      controller: waypoints[index],
-                                      decoration: InputDecoration(
-                                        hintText: "Enter waypoint",
-                                        border: InputBorder.none,
-                                      ),
-                                      readOnly: false,
-                                      onTap: () {
-                                        // TODO: Add geolocation/search logic
-                                      },
-                                    ),
-                                    trailing: IconButton(
-                                      icon: Icon(
-                                        Icons.remove_circle,
-                                        color: Colors.red,
-                                      ),
-                                      onPressed: () => removeWaypoint(index),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                          // Add Waypoint Button
-                          Card(
-                            child: ListTile(
-                              leading: const Icon(Icons.add),
-                              title: const Text("Add Waypoint"),
-                              onTap: addWaypoint,
-                            ),
-                          ),
-                          // Destination
-                          Card(
-                            margin: const EdgeInsets.only(bottom: 10),
-                            child: ListTile(
-                              title: Text("Destination"),
-                              subtitle: TextField(
-                                controller: destinationController.value,
-                                decoration: InputDecoration(
-                                  hintText: "Enter destination",
-                                  border: InputBorder.none,
-                                ),
-                                readOnly: false,
-                                onTap: () {
-                                  // TODO: Add geolocation/search logic
-                                },
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-                          // Vehicle Type Dropdown
-                          Obx(
-                            () => Card(
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                ),
-                                child: DropdownButtonFormField<String>(
+                Expanded(
+                  child: TabBarView(
+                    children: [
+                      // Text Input Tab
+                      SingleChildScrollView(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          spacing: 8,
+                          children: [
+                            // Starting Point
+                            Card(
+                              margin: const EdgeInsets.only(bottom: 10),
+                              child: ListTile(
+                                title: const Text("Starting Point"),
+                                subtitle: TextField(
+                                  controller: startController.value,
                                   decoration: const InputDecoration(
-                                    labelText: "Vehicle Type",
+                                    hintText: "Enter starting location",
                                     border: InputBorder.none,
                                   ),
-                                  value: selectedVehicleType.value,
-                                  items: vehicleTypes
-                                      .map(
-                                        (type) => DropdownMenuItem(
-                                          value: type,
-                                          child: Text(type),
-                                        ),
-                                      )
-                                      .toList(),
-                                  onChanged: onVehicleTypeChanged,
+                                  readOnly: false,
+                                  onTap: () {
+                                    // TODO: Add geolocation/search logic
+                                  },
                                 ),
                               ),
                             ),
-                          ),
-                          const SizedBox(height: 16),
-                          // Vehicle Info Row
-                          Obx(
-                            () => Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                Card(
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(10.0),
-                                    child: Column(
-                                      children: [
-                                        Text(
-                                          "Avg. MPG",
-                                          style: const TextStyle(
-                                            fontSize: 12,
-                                            color: Colors.grey,
-                                          ),
+                            // Waypoints
+                            Obx(
+                              () => waypoints.isNotEmpty ? Column(
+                                children: List.generate(
+                                  waypoints.length,
+                                  (index) => Card(
+                                    margin: const EdgeInsets.only(bottom: 10),
+                                    child: ListTile(
+                                      title: Text("Waypoint ${index + 1}"),
+                                      subtitle: TextField(
+                                        controller: waypoints[index],
+                                        decoration: const InputDecoration(
+                                          hintText: "Enter waypoint",
+                                          border: InputBorder.none,
                                         ),
-                                        const SizedBox(height: 6),
-                                        Text(
-                                          avgMpg.value,
-                                          style: const TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 16,
-                                          ),
+                                        readOnly: false,
+                                        onTap: () {
+                                          // TODO: Add geolocation/search logic
+                                        },
+                                      ),
+                                      trailing: IconButton(
+                                        icon: const Icon(
+                                          Icons.remove_circle,
+                                          color: Colors.red,
                                         ),
-                                      ],
+                                        onPressed: () => removeWaypoint(index),
+                                      ),
                                     ),
                                   ),
                                 ),
-                                Card(
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(10.0),
-                                    child: Column(
-                                      children: [
-                                        Text(
-                                          "Fuel Type",
-                                          style: const TextStyle(
-                                            fontSize: 12,
-                                            color: Colors.grey,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 6),
-                                        Text(
-                                          fuelType.value,
-                                          style: const TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 16,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                                Card(
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(10.0),
-                                    child: Column(
-                                      children: [
-                                        Text(
-                                          "Emission",
-                                          style: const TextStyle(
-                                            fontSize: 12,
-                                            color: Colors.grey,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 6),
-                                        Text(
-                                          emission.value,
-                                          style: const TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 16,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ],
+                              ) : const SizedBox.shrink(),
                             ),
-                          ),
-                          SizedBox(
-                            width: double.infinity,
-                            child: ElevatedButton(
-                              onPressed: null, // TODO: Enable after validation
-                              child: const Text("Calculate Best Route"),
+                            // Add Waypoint Button
+                            ElevatedButton.icon(
+                              onPressed: addWaypoint,
+                              icon: const Icon(Icons.add),
+                              label: const Text("Add Waypoint"),
                             ),
-                          ),
-                          const SizedBox(height: 16),
-                        ],
+                            // Destination
+                            Card(
+                              margin: const EdgeInsets.only(bottom: 10),
+                              child: ListTile(
+                                title: const Text("Destination"),
+                                subtitle: TextField(
+                                  controller: destinationController.value,
+                                  decoration: const InputDecoration(
+                                    hintText: "Enter destination",
+                                    border: InputBorder.none,
+                                  ),
+                                  readOnly: false,
+                                  onTap: () {
+                                    // TODO: Add geolocation/search logic
+                                  },
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            // Vehicle Type Dropdown
+                            Obx(
+                              () => Card(
+                                child: ListTile(
+                                  title: const Text("Vehicle Type"),
+                                  subtitle: DropdownButtonFormField<String>(
+                                    value: selectedVehicleType.value,
+                                    items: vehicleTypes
+                                        .map(
+                                          (type) => DropdownMenuItem(
+                                        value: type,
+                                        child: Text(type),
+                                      ),
+                                    )
+                                        .toList(),
+                                    onChanged: onVehicleTypeChanged,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            // Vehicle Info Row
+                            Obx(
+                              () => Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  Card(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(10.0),
+                                      child: Column(
+                                        children: [
+                                          const Text(
+                                            "Avg. MPG",
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              color: Colors.grey,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 6),
+                                          Text(
+                                            avgMpg.value,
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 16,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  Card(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(10.0),
+                                      child: Column(
+                                        children: [
+                                          const Text(
+                                            "Fuel Type",
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              color: Colors.grey,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 6),
+                                          Text(
+                                            fuelType.value,
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 16,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  Card(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(10.0),
+                                      child: Column(
+                                        children: [
+                                          const Text(
+                                            "Emission",
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              color: Colors.grey,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 6),
+                                          Text(
+                                            emission.value,
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 16,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(
+                              width: double.infinity,
+                              child: ElevatedButton(
+                                onPressed: null, // TODO: Enable after validation
+                                child: Text("Calculate Best Route"),
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                          ],
+                        ),
                       ),
-                    ),
-                    // Map Selection Tab
-                    Center(
-                      child: Text(
-                        "TODO: Embed map selection widget here",
-                        style: TextStyle(color: Colors.blueGrey, fontSize: 16),
+                      // Map Selection Tab
+                      const Center(
+                        child: Text(
+                          "TODO: Embed map selection widget here",
+                          style: TextStyle(color: Colors.blueGrey, fontSize: 16),
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

@@ -1,9 +1,9 @@
 class Trip{
-  final fuelSaved;
-  final fuelUsed;
-  final distance;
-  final moneySaved;
-  final cost;
+  final double fuelSaved;
+  final double fuelUsed;
+  final double distance;
+  final double moneySaved;
+  final double cost;
 
-  Trip({this.fuelSaved, this.fuelUsed, this.distance, this.moneySaved, this.cost});
+  const Trip({required this.fuelSaved, required this.fuelUsed, required this.distance, required this.moneySaved, required this.cost});
 }
