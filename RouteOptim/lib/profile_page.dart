@@ -83,22 +83,31 @@ class ProfilePage extends StatelessWidget {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Obx(
-                                  () => Text(
-                                    "Trips\n${trips.value}",
-                                    style: const TextStyle(fontSize: 14),
+                                Flexible(
+                                  child: Obx(
+                                    () => Text(
+                                      "Trips\n${trips.value}",
+                                      style: const TextStyle(fontSize: 14),
+                                      textAlign: TextAlign.center,
+                                    ),
                                   ),
                                 ),
-                                Obx(
-                                  () => Text(
-                                    "Distance\n${distance.value}",
-                                    style: const TextStyle(fontSize: 14),
+                                Flexible(
+                                  child: Obx(
+                                    () => Text(
+                                      "Distance\n${distance.value}",
+                                      style: const TextStyle(fontSize: 14),
+                                      textAlign: TextAlign.center,
+                                    ),
                                   ),
                                 ),
-                                Obx(
-                                  () => Text(
-                                    "Saved\n${saved.value}",
-                                    style: const TextStyle(fontSize: 14),
+                                Flexible(
+                                  child: Obx(
+                                    () => Text(
+                                      "Saved\n${saved.value}",
+                                      style: const TextStyle(fontSize: 14),
+                                      textAlign: TextAlign.center,
+                                    ),
                                   ),
                                 ),
                               ],
@@ -206,7 +215,7 @@ class ProfilePage extends StatelessWidget {
                         trailing: vehicle['active']
                             ? Container(
                                 padding: const EdgeInsets.symmetric(
-                                  horizontal: 10,
+                                  horizontal: 12,
                                   vertical: 4,
                                 ),
                                 decoration: BoxDecoration(
@@ -215,7 +224,10 @@ class ProfilePage extends StatelessWidget {
                                 ),
                                 child: const Text(
                                   "Active",
-                                  style: TextStyle(color: Colors.blueAccent),
+                                  style: TextStyle(
+                                    color: Colors.blueAccent,
+                                    fontSize: 12,
+                                  ),
                                 ),
                               )
                             : null,
@@ -226,9 +238,19 @@ class ProfilePage extends StatelessWidget {
                             const SizedBox(height: 6),
                             Row(
                               children: [
-                                Text("Avg. MPG ${vehicle['mpg']}"),
-                                const SizedBox(width: 24),
-                                Text("Fuel Type ${vehicle['fuel']}"),
+                                Flexible(
+                                  child: Text(
+                                    "Avg. MPG ${vehicle['mpg']}",
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                const SizedBox(width: 16),
+                                Flexible(
+                                  child: Text(
+                                    "Fuel Type ${vehicle['fuel']}",
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
                               ],
                             ),
                           ],
@@ -290,7 +312,9 @@ class ProfilePage extends StatelessWidget {
                       style: TextStyle(color: Colors.red),
                     ),
                     style: OutlinedButton.styleFrom(
-                      side: BorderSide(color: Colors.red.withOpacity(0.6)),
+                      side: BorderSide(
+                        color: Colors.red.withValues(alpha: 0.6),
+                      ),
                       padding: const EdgeInsets.symmetric(
                         horizontal: 40,
                         vertical: 18,
