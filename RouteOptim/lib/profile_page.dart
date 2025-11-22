@@ -29,10 +29,10 @@ class ProfilePage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text("Settings"),
+            Text("Profile"),
             Text(
               "Manage your preferences",
-              style: TextStyle(fontSize: 12.0, color: Colors.white70),
+              style: TextStyle(fontSize: 12.0, color: Colors.black54),
             ),
           ],
         ),
