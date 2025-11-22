@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:route_optim/car_route_page.dart';
 import 'package:route_optim/profile_page.dart';
 import 'package:route_optim/trips.dart';
 
@@ -13,7 +14,7 @@ class HomePage extends StatelessWidget {
     return Scaffold(
         appBar: AppBar(
           title: ListTile(
-            title: Text(
+            title: const Text(
               'RouteOptim',
               style: TextStyle(
                   fontWeight: FontWeight.bold,
@@ -22,9 +23,9 @@ class HomePage extends StatelessWidget {
             ),
             trailing: IconButton(
                 onPressed: () {
-                  Get.to(() => ProfilePage());
+                  Get.to(() => const ProfilePage());
                 },
-                icon: Icon(Icons.person)
+                icon: const Icon(Icons.person)
             ),
           ),
         ),
@@ -39,10 +40,10 @@ class HomePage extends StatelessWidget {
                     spacing: 8,
                     children: [
                       Card(
-                        color: Color(0xFF0F2CE8),
+                        color: const Color(0xFF0F2CE8),
                         child: Column(
                           children: [
-                            ListTile(
+                            const ListTile(
                                 leading: Text(
                                     'Last Trip',
                                     style: TextStyle(
@@ -59,13 +60,13 @@ class HomePage extends StatelessWidget {
                             Obx(() => trips.isNotEmpty ?
                             Text(
                                 trips.last.toString(),
-                                style: TextStyle(
+                                style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
                                 )
                             ) :
-                            Center(
+                            const Center(
                               child: Text(
                                   'No trips yet. Start your first trip!',
                                   style: TextStyle(
@@ -80,7 +81,7 @@ class HomePage extends StatelessWidget {
                               // ......... display last trip's distance, fuel, and cost .........
                               leading: Text(
                                   'Distance: ${trips.last.distance} km',
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 14,
                                     // fontWeight: FontWeight.bold,
@@ -88,7 +89,7 @@ class HomePage extends StatelessWidget {
                               ),
                               title: Text(
                                   'Fuel Used: ${trips.last.fuelUsed} L',
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 14,
                                     // fontWeight: FontWeight.bold,
@@ -96,28 +97,31 @@ class HomePage extends StatelessWidget {
                               ),
                               trailing: Text(
                                   'Cost: \$${trips.last.cost}',
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 14,
                                     // fontWeight: FontWeight.bold,
                                   )
                               ),
-                            ) : SizedBox.shrink())
+                            ) : const SizedBox.shrink())
                           ],
                         ),
                       ),
-                      SizedBox(height: 16),
-                      Text('Select Travel Mode', style: TextStyle(fontSize: 16),),
+                      const SizedBox(height: 16),
+                      const Text('Select Travel Mode', style: TextStyle(fontSize: 16),),
                       Card(
                         color: Colors.white,
                         child: Center(
                             child: ListTile(
-                              leading: Icon(Icons.directions_car),
-                              title: Text('Car Route', style: TextStyle(fontWeight: FontWeight.bold),),
-                              subtitle: Text('Optimize Fuel Consumption'),
-                              trailing: Icon(Icons.arrow_forward_ios),
+                              leading: const Icon(
+                                  Icons.directions_car,
+                                  color: Colors.blue
+                              ),
+                              title: const Text('Car Route', style: TextStyle(fontWeight: FontWeight.bold),),
+                              subtitle: const Text('Optimize Fuel Consumption'),
+                              trailing: const Icon(Icons.arrow_forward_ios,),
                               onTap: () {
-                                // ......... navigate to car trip planning page .........
+                                Get.to(() => CarRoutePage());
                               },
                             )
                         ),
@@ -126,18 +130,21 @@ class HomePage extends StatelessWidget {
                         color: Colors.white,
                         child: Center(
                             child: ListTile(
-                              leading: Icon(Icons.directions_transit),
-                              title: Text('Metro Route', style: TextStyle(fontWeight: FontWeight.bold),),
-                              subtitle: Text('Fastest Metro Routes'),
-                              trailing: Icon(Icons.arrow_forward_ios),
+                              leading: const Icon(
+                                  Icons.directions_transit,
+                                  color: Colors.green
+                              ),
+                              title: const Text('Metro Route', style: TextStyle(fontWeight: FontWeight.bold),),
+                              subtitle: const Text('Fastest Metro Routes'),
+                              trailing: const Icon(Icons.arrow_forward_ios),
                               onTap: () {
                                 // ......... navigate to car trip planning page .........
                               },
                             )
                         ),
                       ),
-                      SizedBox(height: 16),
-                      Text('Your Stats This Month', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
+                      const SizedBox(height: 16),
+                      const Text('Your Stats This Month', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
                       GridView.count(
                         childAspectRatio: 2,
                         crossAxisCount: 2,
@@ -197,7 +204,7 @@ class HomePage extends StatelessWidget {
               stat == 'Fuel Saved' ? '$savedFuel L' :
               stat == 'Distance Travelled' ? '$distance km' :
               stat == 'Money Saved' ? '\$$moneySaved' : '',
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
               ),

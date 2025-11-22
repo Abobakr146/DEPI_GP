@@ -56,14 +56,15 @@ class CarRoutePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(leading: BackButton(), title: const Text("Car Route")),
+      appBar: AppBar(title: const Text("Car Route", style: TextStyle(fontWeight: FontWeight.bold))),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: DefaultTabController(
           length: 2,
           child: Column(
+            spacing: 8,
             children: [
-              Container(
+              DecoratedBox(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(8),
                   color: Colors.grey.shade200,
@@ -73,8 +74,10 @@ class CarRoutePage extends StatelessWidget {
                   unselectedLabelColor: Colors.black,
                   indicator: BoxDecoration(
                     borderRadius: BorderRadius.circular(8),
-                    color: Colors.blue,
+                    color: const Color(0xFF0F2CE8),
                   ),
+                  indicatorSize: TabBarIndicatorSize.tab,
+                  dividerColor: Colors.transparent,
                   tabs: const [
                     Tab(text: "Text Input"),
                     Tab(text: "Map Selection"),
@@ -88,15 +91,16 @@ class CarRoutePage extends StatelessWidget {
                     SingleChildScrollView(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
+                        spacing: 8,
                         children: [
                           // Starting Point
                           Card(
                             margin: const EdgeInsets.only(bottom: 10),
                             child: ListTile(
-                              title: Text("Starting Point"),
+                              title: const Text("Starting Point"),
                               subtitle: TextField(
                                 controller: startController.value,
-                                decoration: InputDecoration(
+                                decoration: const InputDecoration(
                                   hintText: "Enter starting location",
                                   border: InputBorder.none,
                                 ),
@@ -118,7 +122,7 @@ class CarRoutePage extends StatelessWidget {
                                     title: Text("Waypoint ${index + 1}"),
                                     subtitle: TextField(
                                       controller: waypoints[index],
-                                      decoration: InputDecoration(
+                                      decoration: const InputDecoration(
                                         hintText: "Enter waypoint",
                                         border: InputBorder.none,
                                       ),
@@ -128,7 +132,7 @@ class CarRoutePage extends StatelessWidget {
                                       },
                                     ),
                                     trailing: IconButton(
-                                      icon: Icon(
+                                      icon: const Icon(
                                         Icons.remove_circle,
                                         color: Colors.red,
                                       ),
@@ -151,10 +155,10 @@ class CarRoutePage extends StatelessWidget {
                           Card(
                             margin: const EdgeInsets.only(bottom: 10),
                             child: ListTile(
-                              title: Text("Destination"),
+                              title: const Text("Destination"),
                               subtitle: TextField(
                                 controller: destinationController.value,
-                                decoration: InputDecoration(
+                                decoration: const InputDecoration(
                                   hintText: "Enter destination",
                                   border: InputBorder.none,
                                 ),
@@ -169,23 +173,17 @@ class CarRoutePage extends StatelessWidget {
                           // Vehicle Type Dropdown
                           Obx(
                             () => Card(
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                ),
-                                child: DropdownButtonFormField<String>(
-                                  decoration: const InputDecoration(
-                                    labelText: "Vehicle Type",
-                                    border: InputBorder.none,
-                                  ),
+                              child: ListTile(
+                                title: const Text("Vehicle Type"),
+                                subtitle: DropdownButtonFormField<String>(
                                   value: selectedVehicleType.value,
                                   items: vehicleTypes
                                       .map(
                                         (type) => DropdownMenuItem(
-                                          value: type,
-                                          child: Text(type),
-                                        ),
-                                      )
+                                      value: type,
+                                      child: Text(type),
+                                    ),
+                                  )
                                       .toList(),
                                   onChanged: onVehicleTypeChanged,
                                 ),
@@ -203,9 +201,9 @@ class CarRoutePage extends StatelessWidget {
                                     padding: const EdgeInsets.all(10.0),
                                     child: Column(
                                       children: [
-                                        Text(
+                                        const Text(
                                           "Avg. MPG",
-                                          style: const TextStyle(
+                                          style: TextStyle(
                                             fontSize: 12,
                                             color: Colors.grey,
                                           ),
@@ -227,9 +225,9 @@ class CarRoutePage extends StatelessWidget {
                                     padding: const EdgeInsets.all(10.0),
                                     child: Column(
                                       children: [
-                                        Text(
+                                        const Text(
                                           "Fuel Type",
-                                          style: const TextStyle(
+                                          style: TextStyle(
                                             fontSize: 12,
                                             color: Colors.grey,
                                           ),
@@ -251,9 +249,9 @@ class CarRoutePage extends StatelessWidget {
                                     padding: const EdgeInsets.all(10.0),
                                     child: Column(
                                       children: [
-                                        Text(
+                                        const Text(
                                           "Emission",
-                                          style: const TextStyle(
+                                          style: TextStyle(
                                             fontSize: 12,
                                             color: Colors.grey,
                                           ),
@@ -273,11 +271,11 @@ class CarRoutePage extends StatelessWidget {
                               ],
                             ),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             width: double.infinity,
                             child: ElevatedButton(
                               onPressed: null, // TODO: Enable after validation
-                              child: const Text("Calculate Best Route"),
+                              child: Text("Calculate Best Route"),
                             ),
                           ),
                           const SizedBox(height: 16),
@@ -285,7 +283,7 @@ class CarRoutePage extends StatelessWidget {
                       ),
                     ),
                     // Map Selection Tab
-                    Center(
+                    const Center(
                       child: Text(
                         "TODO: Embed map selection widget here",
                         style: TextStyle(color: Colors.blueGrey, fontSize: 16),
