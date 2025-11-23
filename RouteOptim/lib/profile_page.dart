@@ -125,8 +125,14 @@ class ProfilePage extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 12),
+              // Account Section
+              const Text(
+                "Account",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
               // Preferences Cards
+              const SizedBox(height: 12),
               Card(
                 child: ListTile(
                   leading: const Icon(
@@ -160,27 +166,11 @@ class ProfilePage extends StatelessWidget {
                   },
                 ),
               ),
-              const SizedBox(height: 18),
-              // Account Section
-              const Text(
-                "Account",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              Card(
-                child: ListTile(
-                  leading: const Icon(Icons.lock, color: Colors.orange),
-                  title: const Text("Privacy & Security"),
-                  subtitle: const Text("Control your data"),
-                  onTap: () {
-                    // TODO: Handle privacy/security logic
-                  },
-                ),
-              ),
               Card(
                 child: ListTile(
                   leading: const Icon(Icons.help, color: Colors.deepPurple),
                   title: const Text("Help & Support"),
-                  subtitle: const Text("FAQs and contact us"),
+                  subtitle: const Text("Contact us at support@gmail.com"),
                   onTap: () {
                     // TODO: Handle help/support logic
                   },
