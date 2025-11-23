@@ -37,6 +37,7 @@ dependencies:
   dartx: ^1.2.0
   get: ^4.7.2
   geolocator: ^14.0.2
+  flutter_map: ^8.2.2
 
 dev_dependencies:
   flutter_test:

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import 'map_page.dart';
+
 class CarRoutePage extends StatelessWidget {
   final Rx<TextEditingController> startController = TextEditingController().obs;
   final RxList<TextEditingController> waypoints = <TextEditingController>[].obs;
@@ -322,6 +324,7 @@ class CarRoutePage extends StatelessWidget {
                                       print(
                                         "Open map to select starting point",
                                       );
+                                      Get.to(() => MapDirectionsPage());
                                     },
                                     icon: const Icon(Icons.location_pin),
                                   ),
@@ -365,6 +368,9 @@ class CarRoutePage extends StatelessWidget {
                                                     //TODO: Open map to select waypoint
                                                     print(
                                                       "Open map to select waypoint",
+                                                    );
+                                                    Get.to(
+                                                      () => MapDirectionsPage(),
                                                     );
                                                   },
                                                   icon: const Icon(
@@ -411,6 +417,7 @@ class CarRoutePage extends StatelessWidget {
                                       print(
                                         "Open map to select Destination point",
                                       );
+                                      Get.to(() => MapDirectionsPage());
                                     },
                                     icon: const Icon(Icons.location_pin),
                                   ),
