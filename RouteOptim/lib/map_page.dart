@@ -5,6 +5,11 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:async';
 
+// ⚠️ IMPORTANT: Get your free Mapbox token from https://www.mapbox.com/
+// Replace 'YOUR_MAPBOX_ACCESS_TOKEN' with your actual token
+const String MAPBOX_ACCESS_TOKEN =
+    'pk.eyJ1IjoiaGlzaGFtaGF0ZW0iLCJhIjoiY21pYm82ZzJqMHVvbTJsczQwZnBwd20zOSJ9.S39J9fY023DATGzHegv1GA';
+
 // Main Map Directions Page
 class MapDirectionsPage extends StatefulWidget {
   const MapDirectionsPage({Key? key}) : super(key: key);
@@ -37,9 +42,9 @@ class _MapDirectionsPageState extends State<MapDirectionsPage> {
     super.dispose();
   }
 
-  // Search location using Nominatim API
+  // Search location using Mapbox Geocoding API
   Future<void> _searchLocation(String query, bool isStart) async {
-    if (query.length < 3) {
+    if (query.length < 2) {
       setState(() {
         if (isStart) {
           _currentSuggestions = [];
@@ -51,16 +56,18 @@ class _MapDirectionsPageState extends State<MapDirectionsPage> {
     }
 
     try {
+      // Using Mapbox Geocoding API for better results
       final response = await http.get(
         Uri.parse(
-          'https://nominatim.openstreetmap.org/search?format=json&q=${Uri.encodeComponent(query)}&limit=5',
+          'https://api.mapbox.com/geocoding/v5/mapbox.places/${Uri.encodeComponent(query)}.json?access_token=$MAPBOX_ACCESS_TOKEN&limit=5&autocomplete=true',
         ),
       );
 
       if (response.statusCode == 200) {
-        final List<dynamic> data = json.decode(response.body);
-        final suggestions = data
-            .map((e) => LocationSuggestion.fromJson(e))
+        final data = json.decode(response.body);
+        final List<dynamic> features = data['features'] ?? [];
+        final suggestions = features
+            .map((e) => LocationSuggestion.fromMapbox(e))
             .toList();
 
         setState(() {
@@ -100,15 +107,20 @@ class _MapDirectionsPageState extends State<MapDirectionsPage> {
       }
     });
 
-    // Update map view
+    // Update map view and show marker immediately
     final start = isStart ? location : _selectedStart;
     final end = isStart ? _selectedEnd : location;
 
+    // If only one location selected, center on it
+    if (start != null && end == null) {
+      _mapController.move(LatLng(start.lat, start.lon), 14);
+    } else if (end != null && start == null) {
+      _mapController.move(LatLng(end.lat, end.lon), 14);
+    }
+
+    // If both locations selected, calculate route and fit bounds
     if (start != null && end != null) {
       _calculateRoute(start, end);
-    } else if (start != null || end != null) {
-      final loc = start ?? end!;
-      _mapController.move(LatLng(loc.lat, loc.lon), 14);
     }
   }
 
@@ -280,20 +292,22 @@ class _MapDirectionsPageState extends State<MapDirectionsPage> {
                     initialZoom: 12,
                   ),
                   children: [
+                    // Mapbox Tile Layer
                     TileLayer(
                       urlTemplate:
-                          'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                      subdomains: const ['a', 'b', 'c'],
-                      userAgentPackageName: 'com.example.app',
+                          'https://api.mapbox.com/styles/v1/mapbox/streets-v12/tiles/{z}/{x}/{y}?access_token={accessToken}',
+                      additionalOptions: const {
+                        'accessToken': MAPBOX_ACCESS_TOKEN,
+                      },
+                      userAgentPackageName: 'com.example.map_directions_app',
+                      tileProvider: NetworkTileProvider(),
                     ),
 
-                    // Attribution (required for OpenStreetMap)
+                    // Attribution (Mapbox)
                     RichAttributionWidget(
                       attributions: [
-                        TextSourceAttribution(
-                          'OpenStreetMap contributors',
-                          onTap: () {}, // You can add a link here if needed
-                        ),
+                        TextSourceAttribution('© Mapbox', onTap: () {}),
+                        TextSourceAttribution('© OpenStreetMap', onTap: () {}),
                       ],
                       alignment: AttributionAlignment.bottomRight,
                     ),
@@ -455,13 +469,48 @@ class _MapDirectionsPageState extends State<MapDirectionsPage> {
                   Divider(height: 1, color: Colors.grey.shade200),
               itemBuilder: (context, index) {
                 final suggestion = suggestions[index];
-                return ListTile(
+                return InkWell(
                   onTap: () => onSuggestionTap(suggestion),
-                  title: Text(
-                    suggestion.displayName,
-                    style: const TextStyle(fontSize: 14),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          _getIconForPlaceType(suggestion.placeType),
+                          size: 20,
+                          color: Colors.grey.shade600,
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              if (suggestion.placeName != null)
+                                Text(
+                                  suggestion.placeName!,
+                                  style: const TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              Text(
+                                suggestion.displayName,
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: Colors.grey.shade600,
+                                ),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                  dense: true,
                 );
               },
             ),
@@ -492,6 +541,30 @@ class _MapDirectionsPageState extends State<MapDirectionsPage> {
       ),
     );
   }
+
+  // Get appropriate icon for place type
+  IconData _getIconForPlaceType(String? placeType) {
+    if (placeType == null) return Icons.place;
+
+    switch (placeType) {
+      case 'country':
+        return Icons.public;
+      case 'region':
+      case 'district':
+        return Icons.location_city;
+      case 'place':
+      case 'locality':
+        return Icons.location_on;
+      case 'neighborhood':
+        return Icons.home;
+      case 'address':
+        return Icons.home_outlined;
+      case 'poi':
+        return Icons.business;
+      default:
+        return Icons.place;
+    }
+  }
 }
 
 // Location suggestion model
@@ -499,13 +572,30 @@ class LocationSuggestion {
   final String displayName;
   final double lat;
   final double lon;
+  final String? placeName;
+  final String? placeType;
 
   LocationSuggestion({
     required this.displayName,
     required this.lat,
     required this.lon,
+    this.placeName,
+    this.placeType,
   });
 
+  // From Mapbox Geocoding API
+  factory LocationSuggestion.fromMapbox(Map<String, dynamic> json) {
+    final coordinates = json['geometry']['coordinates'] as List;
+    return LocationSuggestion(
+      displayName: json['place_name'] ?? '',
+      lat: coordinates[1],
+      lon: coordinates[0],
+      placeName: json['text'] ?? '',
+      placeType: json['place_type']?.first ?? '',
+    );
+  }
+
+  // Fallback for Nominatim (if needed)
   factory LocationSuggestion.fromJson(Map<String, dynamic> json) {
     return LocationSuggestion(
       displayName: json['display_name'] ?? '',
