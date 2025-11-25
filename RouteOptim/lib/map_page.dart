@@ -33,6 +33,8 @@ class _MapDirectionsPageState extends State<MapDirectionsPage> {
   Timer? _debounceTimer;
   bool _showCurrentSuggestions = false;
   bool _showDestSuggestions = false;
+  bool _isSelectingFromMap = false;
+  bool _isSelectingStart = true;
 
   @override
   void dispose() {
@@ -83,15 +85,69 @@ class _MapDirectionsPageState extends State<MapDirectionsPage> {
     }
   }
 
+  // Reverse geocode (get address from coordinates)
+  Future<void> _reverseGeocode(LatLng position, bool isStart) async {
+    try {
+      final response = await http.get(
+        Uri.parse(
+          'https://api.mapbox.com/geocoding/v5/mapbox.places/${position.longitude},${position.latitude}.json?access_token=$MAPBOX_ACCESS_TOKEN&limit=1',
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final List<dynamic> features = data['features'] ?? [];
+
+        if (features.isNotEmpty) {
+          final location = LocationSuggestion.fromMapbox(features[0]);
+          _selectLocation(location, isStart);
+        }
+      }
+    } catch (e) {
+      print('Error reverse geocoding: $e');
+    }
+  }
+
+  // Enable map selection mode
+  void _enableMapSelection(bool isStart) {
+    setState(() {
+      _isSelectingFromMap = true;
+      _isSelectingStart = isStart;
+      // Hide suggestions when entering map selection mode
+      _showCurrentSuggestions = false;
+      _showDestSuggestions = false;
+    });
+  }
+
+  // Handle map tap
+  void _onMapTap(TapPosition tapPosition, LatLng position) {
+    if (_isSelectingFromMap) {
+      _reverseGeocode(position, _isSelectingStart);
+      setState(() {
+        _isSelectingFromMap = false;
+      });
+    }
+  }
+
   // Debounce search
   void _onSearchChanged(String query, bool isStart) {
+    if (query.isEmpty) {
+      setState(() {
+        if (isStart) {
+          _currentSuggestions = [];
+        } else {
+          _destSuggestions = [];
+        }
+      });
+      return;
+    }
+
     _debounceTimer?.cancel();
-    _debounceTimer = Timer(const Duration(milliseconds: 300), () {
+    _debounceTimer = Timer(const Duration(milliseconds: 500), () {
       _searchLocation(query, isStart);
     });
   }
 
-  // Select location from suggestions
   void _selectLocation(LocationSuggestion location, bool isStart) {
     setState(() {
       if (isStart) {
@@ -287,9 +343,10 @@ class _MapDirectionsPageState extends State<MapDirectionsPage> {
               children: [
                 FlutterMap(
                   mapController: _mapController,
-                  options: const MapOptions(
-                    initialCenter: LatLng(30.0444, 31.2357), // Cairo
+                  options: MapOptions(
+                    initialCenter: const LatLng(30.0444, 31.2357), // Cairo
                     initialZoom: 12,
+                    onTap: _onMapTap,
                   ),
                   children: [
                     // Mapbox Tile Layer
@@ -349,8 +406,54 @@ class _MapDirectionsPageState extends State<MapDirectionsPage> {
                   ],
                 ),
 
+                // Map selection mode indicator
+                if (_isSelectingFromMap)
+                  Positioned(
+                    top: 16,
+                    left: 0,
+                    right: 0,
+                    child: Center(
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 12,
+                        ),
+                        decoration: BoxDecoration(
+                          color: _isSelectingStart ? Colors.green : Colors.red,
+                          borderRadius: BorderRadius.circular(25),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.2),
+                              blurRadius: 8,
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(
+                              Icons.touch_app,
+                              color: Colors.white,
+                              size: 20,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              'Tap on map to select ${_isSelectingStart ? 'start' : 'destination'} location',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+
                 // Helper text
-                if (_selectedStart == null && _selectedEnd == null)
+                if (_selectedStart == null &&
+                    _selectedEnd == null &&
+                    !_isSelectingFromMap)
                   Positioned(
                     bottom: 16,
                     left: 0,
@@ -401,51 +504,65 @@ class _MapDirectionsPageState extends State<MapDirectionsPage> {
     required Function(LocationSuggestion) onSuggestionTap,
     required VoidCallback onClear,
   }) {
+    final bool isStart = icon == Icons.location_on;
+
     return Column(
       children: [
-        Focus(
-          onFocusChange: onFocusChanged,
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.grey.shade100,
-              border: Border.all(color: Colors.grey.shade300),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Row(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 12),
-                  child: Icon(icon, color: iconColor, size: 20),
-                ),
-                Expanded(
-                  child: TextField(
-                    controller: controller,
-                    onChanged: onChanged,
-                    decoration: InputDecoration(
-                      hintText: hint,
-                      hintStyle: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey.shade600,
-                      ),
-                      border: InputBorder.none,
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 14,
-                      ),
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.grey.shade100,
+            border: Border.all(color: Colors.grey.shade300),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Row(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(left: 12),
+                child: Icon(icon, color: iconColor, size: 20),
+              ),
+              Expanded(
+                child: TextField(
+                  controller: controller,
+                  onChanged: onChanged,
+                  onTap: () {
+                    setState(() {
+                      if (isStart) {
+                        _showCurrentSuggestions = true;
+                      } else {
+                        _showDestSuggestions = true;
+                      }
+                    });
+                  },
+                  decoration: InputDecoration(
+                    hintText: hint,
+                    hintStyle: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey.shade600,
+                    ),
+                    border: InputBorder.none,
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 14,
                     ),
                   ),
                 ),
-                if (controller.text.isNotEmpty)
-                  IconButton(
-                    icon: Icon(
-                      Icons.close,
-                      size: 18,
-                      color: Colors.grey.shade400,
-                    ),
-                    onPressed: onClear,
+              ),
+              // Map selection button
+              IconButton(
+                icon: Icon(Icons.map, size: 20, color: Colors.blue.shade600),
+                onPressed: () => _enableMapSelection(isStart),
+                tooltip: 'Select from map',
+              ),
+              if (controller.text.isNotEmpty)
+                IconButton(
+                  icon: Icon(
+                    Icons.close,
+                    size: 18,
+                    color: Colors.grey.shade400,
                   ),
-              ],
-            ),
+                  onPressed: onClear,
+                ),
+            ],
           ),
         ),
 
