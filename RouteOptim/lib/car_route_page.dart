@@ -76,401 +76,238 @@ class _CarRoutePageState extends State<CarRoutePage> {
         ),
       ),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: DefaultTabController(
-            length: 2,
-            child: Column(
-              spacing: 8,
-              children: [
-                DecoratedBox(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                    color: Colors.grey.shade200,
-                  ),
-                  child: TabBar(
-                    labelColor: Colors.white,
-                    unselectedLabelColor: Colors.black,
-                    indicator: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
-                      color: const Color(0xFF0F2CE8),
-                    ),
-                    indicatorSize: TabBarIndicatorSize.tab,
-                    dividerColor: Colors.transparent,
-                    tabs: const [
-                      Tab(text: "Text Input"),
-                      Tab(text: "Map Selection"),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: TabBarView(
-                    children: [
-                      // Text Input Tab
-                      SingleChildScrollView(
-                        child: Obx(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: SingleChildScrollView(
+              child: Column(
+                spacing: 8,
+                children: [
+                  SingleChildScrollView(
+                    child: Obx(
                           () => Column(
-                            spacing: 8,
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              Card(
-                                margin: const EdgeInsets.only(bottom: 10),
-                                child: ListTile(
-                                  title: const Text("Starting Point"),
-                                  subtitle: TextField(
-                                    controller: startController,
-                                    decoration: const InputDecoration(
-                                      hintText: "Enter starting location",
-                                      border: InputBorder.none,
+                        spacing: 8,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Card(
+                            margin: const EdgeInsets.only(bottom: 10),
+                            child: ListTile(
+                              title: const Text("Starting Point"),
+                              subtitle: Row(
+                                spacing: 8,
+                                children: [
+                                  Expanded(
+                                    child: TextField(
+                                      controller: startController,
+                                      decoration: const InputDecoration(
+                                        hintText: "Enter starting location",
+                                        border: InputBorder.none,
+                                      ),
+                                      onChanged: (value) =>
+                                          print(startController.value.text),
                                     ),
-                                    onChanged: (value) =>
-                                        print(startController.value.text),
                                   ),
-                                  trailing: IconButton(
-                                    onPressed: () {
-                                      // TODO: Open map to select starting point
-                                      print(
-                                        "Open map to select starting point",
-                                      );
-                                      Get.to(() => const MapDirectionsPage());
-                                    },
-                                    icon: const Icon(Icons.location_pin),
-                                  ),
-                                ),
+                                  Column(
+                                    children: [
+                                      IconButton(
+                                        onPressed: () {
+                                          // TODO: Open map to select starting point
+                                          print(
+                                            "Open map to select starting point",
+                                          );
+                                          Get.to(() => const MapDirectionsPage());
+                                        },
+                                        icon: const Icon(Icons.location_pin),
+                                      ),
+                                      IconButton(
+                                        onPressed: () {
+
+                                          // TODO: Get current location using geolocator package and put the text in the destinationController
+                                          print("Open map to select starting point");
+
+                                        },
+                                        icon: const Icon(Icons.my_location),
+                                      ),
+                                    ],
+                                  )
+                                ],
                               ),
-                              waypoints.isNotEmpty
-                                  ? Column(
-                                      children: List.generate(
-                                        waypoints.length,
-                                        (index) => Card(
-                                          margin: const EdgeInsets.only(
-                                            bottom: 10,
+                            ),
+                          ),
+                          waypoints.isNotEmpty ? Column(
+                            children: List.generate(
+                              waypoints.length,
+                                  (index) => Card(
+                                margin: const EdgeInsets.only(bottom: 10,),
+                                child: ListTile(
+                                  title: Text("Waypoint ${index + 1}",),
+                                  subtitle: Row(
+                                    children: [
+                                      Expanded(
+                                        child: TextField(
+                                          controller:
+                                          waypoints[index],
+                                          decoration:
+                                          const InputDecoration(
+                                            hintText:
+                                            "Enter waypoint",
+                                            border:
+                                            InputBorder.none,
                                           ),
-                                          child: ListTile(
-                                            title: Text(
-                                              "Waypoint ${index + 1}",
-                                            ),
-                                            subtitle: Row(
-                                              children: [
-                                                Expanded(
-                                                  child: TextField(
-                                                    controller:
-                                                        waypoints[index],
-                                                    decoration:
-                                                        const InputDecoration(
-                                                          hintText:
-                                                              "Enter waypoint",
-                                                          border:
-                                                              InputBorder.none,
-                                                        ),
-                                                    onChanged: (value) => print(
-                                                      waypoints[index]
-                                                          .value
-                                                          .text,
-                                                    ),
-                                                  ),
-                                                ),
-                                                IconButton(
-                                                  onPressed: () {
-                                                    //TODO: Open map to select waypoint
-                                                    print(
-                                                      "Open map to select waypoint",
-                                                    );
-                                                    Get.to(
-                                                      () =>
-                                                          const MapDirectionsPage(),
-                                                    );
-                                                  },
-                                                  icon: const Icon(
-                                                    Icons.location_pin,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                            trailing: IconButton(
-                                              icon: const Icon(
-                                                Icons.remove_circle,
-                                                color: Colors.red,
-                                              ),
-                                              onPressed: () {
-                                                waypoints.removeAt(index);
-                                              },
-                                            ),
+                                          onChanged: (value) => print(
+                                            waypoints[index]
+                                                .value
+                                                .text,
                                           ),
                                         ),
                                       ),
-                                    )
-                                  : const SizedBox.shrink(),
-                              ElevatedButton.icon(
-                                onPressed: () {
-                                  waypoints.add(TextEditingController());
-                                },
-                                icon: const Icon(Icons.add),
-                                label: const Text("Add Waypoint"),
-                              ),
-                              Card(
-                                margin: const EdgeInsets.only(bottom: 10),
-                                child: ListTile(
-                                  title: const Text("Destination"),
-                                  subtitle: TextField(
-                                    controller: destinationController,
-                                    decoration: const InputDecoration(
-                                      hintText: "Enter destination",
-                                      border: InputBorder.none,
-                                    ),
-                                    onChanged: (value) =>
-                                        print(destinationController.value.text),
+                                      Column(
+                                        children: [
+                                          IconButton(
+                                            onPressed: () {
+                                              // TODO: Open map to select starting point
+                                              print(
+                                                "Open map to select starting point",
+                                              );
+                                              Get.to(() => const MapDirectionsPage());
+                                            },
+                                            icon: const Icon(Icons.location_pin),
+                                          ),
+                                          IconButton(
+                                            onPressed: () {
+
+                                              // TODO: Get current location using geolocator package and put the text in the destinationController
+                                              print("Open map to select starting point");
+
+                                            },
+                                            icon: const Icon(Icons.my_location),
+                                          ),
+                                        ],
+                                      )
+                                    ],
                                   ),
                                   trailing: IconButton(
+                                    icon: const Icon(
+                                      Icons.remove_circle,
+                                      color: Colors.red,
+                                    ),
                                     onPressed: () {
-                                      //TODO: Open map to select Destination
-                                      print(
-                                        "Open map to select Destination point",
-                                      );
-                                      Get.to(() => const MapDirectionsPage());
+                                      waypoints.removeAt(index);
                                     },
-                                    icon: const Icon(Icons.location_pin),
                                   ),
                                 ),
                               ),
-                              const SizedBox(height: 12),
-                              SizedBox(
-                                height: 300,
-                                child: Card(
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      spacing: 8,
-                                      children: [
-                                        const Text('Choose Vehicle'),
-                                        Expanded(
-                                          child: ListView.builder(
-                                            shrinkWrap: true,
-                                            itemCount: vehicles.length,
-                                            itemBuilder: (ctx, index) {
-                                              return buildVehicleCard(
-                                                vehicles[index],
-                                              );
-                                            },
-                                          ),
-                                        ),
-                                        ElevatedButton.icon(
-                                          onPressed: () {
-                                            Get.to(() => AddVehiclePage());
-                                          },
-                                          label: const Text('Add New Vehicle'),
-                                          icon: const Icon(Icons.add),
-                                        ),
-                                        // **********************************************************************************************************
-                                      ],
+                            ),
+                          )
+                              : const SizedBox.shrink(),
+                          ElevatedButton.icon(
+                            onPressed: () {
+                              waypoints.add(TextEditingController());
+                            },
+                            icon: const Icon(Icons.add),
+                            label: const Text("Add Waypoint"),
+                          ),
+                          Card(
+                            margin: const EdgeInsets.only(bottom: 10),
+                            child: ListTile(
+                              title: const Text("Destination"),
+                              subtitle: Row(
+                                spacing: 8,
+                                children: [
+                                  Expanded(
+                                    child: TextField(
+                                      controller: destinationController,
+                                      decoration: const InputDecoration(
+                                        hintText: "Enter destination",
+                                        border: InputBorder.none,
+                                      ),
+                                      onChanged: (value) =>
+                                          print(destinationController.value.text),
                                     ),
                                   ),
+                                  Column(
+                                    children: [
+                                      IconButton(
+                                        onPressed: () {
+                                          // TODO: Open map to select starting point
+                                          print(
+                                            "Open map to select starting point",
+                                          );
+                                          Get.to(() => const MapDirectionsPage());
+                                        },
+                                        icon: const Icon(Icons.location_pin),
+                                      ),
+                                      IconButton(
+                                        onPressed: () {
+
+                                          // TODO: Get current location using geolocator package and put the text in the destinationController
+                                          print("Open map to select starting point");
+
+                                        },
+                                        icon: const Icon(Icons.my_location),
+                                      ),
+                                    ],
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          SizedBox(
+                            height: 300,
+                            child: Card(
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Column(
+                                  crossAxisAlignment:
+                                  CrossAxisAlignment.start,
+                                  spacing: 8,
+                                  children: [
+                                    const Text('Choose Vehicle'),
+                                    Expanded(
+                                      child: ListView.builder(
+                                        shrinkWrap: true,
+                                        itemCount: vehicles.length,
+                                        itemBuilder: (ctx, index) {
+                                          return buildVehicleCard(
+                                            vehicles[index],
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                    ElevatedButton.icon(
+                                      onPressed: () {
+                                        Get.to(() => AddVehiclePage());
+                                      },
+                                      label: const Text('Add New Vehicle'),
+                                      icon: const Icon(Icons.add),
+                                    ),
+                                    // **********************************************************************************************************
+                                  ],
                                 ),
                               ),
-                              // Obx(() {
-                              //   return ElevatedButton(
-                              //     onPressed:
-                              //     (startController.text.isNotEmpty &&
-                              //         destinationController.text.isNotEmpty &&
-                              //         waypoints.every((c) => c.text.isNotEmpty,)) ? () {
-                              //       // TODO: Calculate best route
-                              //       print("Calculating best route...");
-                              //     } : null,
-                              //     child: const Text("Get Best Route"),
-                              //   );
-                              // }),
-                              const SizedBox(height: 16),
-                            ],
+                            ),
                           ),
-                        ),
+                          // Obx(() {
+                          //   return ElevatedButton(
+                          //     onPressed:
+                          //     (startController.text.isNotEmpty &&
+                          //         destinationController.text.isNotEmpty &&
+                          //         waypoints.every((c) => c.text.isNotEmpty,)) ? () {
+                          //       // TODO: Calculate best route
+                          //       print("Calculating best route...");
+                          //     } : null,
+                          //     child: const Text("Get Best Route"),
+                          //   );
+                          // }),
+                          const SizedBox(height: 16),
+                        ],
                       ),
-
-                      //*************************************************************** Map Selection Tab
-                      SingleChildScrollView(
-                        child: Center(
-                          child: Text("Map Selection Coming Soon!"),
-                        ),
-                      ),
-                      // SingleChildScrollView(
-                      //   child: Obx(
-                      //     () => Column(
-                      //       crossAxisAlignment: CrossAxisAlignment.stretch,
-                      //       children: [
-                      //         Card(
-                      //           margin: const EdgeInsets.only(bottom: 10),
-                      //           child: ListTile(
-                      //             title: const Text("Starting Point"),
-                      //             subtitle: TextField(
-                      //               controller: startController,
-                      //               decoration: const InputDecoration(
-                      //                 hintText: "Enter starting location",
-                      //                 border: InputBorder.none,
-                      //               ),
-                      //
-                      //               onChanged: (value) =>
-                      //                   print(startController.value.text),
-                      //               readOnly: true,
-                      //             ),
-                      //             trailing: IconButton(
-                      //               onPressed: () {
-                      //                 // TODO: Open map to select starting point
-                      //                 print(
-                      //                   "Open map to select starting point",
-                      //                 );
-                      //                 Get.to(() => const MapDirectionsPage());
-                      //               },
-                      //               icon: const Icon(Icons.location_pin),
-                      //             ),
-                      //           ),
-                      //         ),
-                      //         waypoints.isNotEmpty
-                      //             ? Column(
-                      //                 children: List.generate(
-                      //                   waypoints.length,
-                      //                   (index) => Card(
-                      //                     margin: const EdgeInsets.only(
-                      //                       bottom: 10,
-                      //                     ),
-                      //                     child: ListTile(
-                      //                       title: Text(
-                      //                         "Waypoint ${index + 1}",
-                      //                       ),
-                      //                       subtitle: Row(
-                      //                         children: [
-                      //                           Expanded(
-                      //                             child: TextField(
-                      //                               controller:
-                      //                                   waypoints[index],
-                      //                               decoration:
-                      //                                   const InputDecoration(
-                      //                                     hintText:
-                      //                                         "Enter waypoint",
-                      //                                     border:
-                      //                                         InputBorder.none,
-                      //                                   ),
-                      //                               onChanged: (value) => print(
-                      //                                 waypoints[index]
-                      //                                     .value
-                      //                                     .text,
-                      //                               ),
-                      //                               readOnly: true,
-                      //                             ),
-                      //                           ),
-                      //                           IconButton(
-                      //                             onPressed: () {
-                      //                               //TODO: Open map to select waypoint
-                      //                               print(
-                      //                                 "Open map to select waypoint",
-                      //                               );
-                      //                               Get.to(
-                      //                                 () =>
-                      //                                     const MapDirectionsPage(),
-                      //                               );
-                      //                             },
-                      //                             icon: const Icon(
-                      //                               Icons.location_pin,
-                      //                             ),
-                      //                           ),
-                      //                         ],
-                      //                       ),
-                      //                       trailing: IconButton(
-                      //                         icon: const Icon(
-                      //                           Icons.remove_circle,
-                      //                           color: Colors.red,
-                      //                         ),
-                      //                         onPressed: () {
-                      //                           waypoints.removeAt(index);
-                      //                         },
-                      //                       ),
-                      //                     ),
-                      //                   ),
-                      //                 ),
-                      //               )
-                      //             : const SizedBox.shrink(),
-                      //         ElevatedButton.icon(
-                      //           onPressed: () {
-                      //             waypoints.add(TextEditingController());
-                      //           },
-                      //           icon: const Icon(Icons.add),
-                      //           label: const Text("Add Waypoint"),
-                      //         ),
-                      //         Card(
-                      //           margin: const EdgeInsets.only(bottom: 10),
-                      //           child: ListTile(
-                      //             title: const Text("Destination"),
-                      //             subtitle: TextField(
-                      //               controller: destinationController,
-                      //               decoration: const InputDecoration(
-                      //                 hintText: "Enter destination",
-                      //                 border: InputBorder.none,
-                      //               ),
-                      //               onChanged: (value) =>
-                      //                   print(destinationController.value.text),
-                      //               readOnly: true,
-                      //             ),
-                      //             trailing: IconButton(
-                      //               onPressed: () {
-                      //                 // TODO: Open map to select starting point
-                      //                 print(
-                      //                   "Open map to select Destination point",
-                      //                 );
-                      //                 Get.to(() => const MapDirectionsPage());
-                      //               },
-                      //               icon: const Icon(Icons.location_pin),
-                      //             ),
-                      //           ),
-                      //         ),
-                      //         const SizedBox(height: 12),
-                      //         const Card(
-                      //           // child: ListTile(
-                      //           //   title: const Text("Vehicle Type"),
-                      //           //   subtitle: DropdownButtonFormField<String>(
-                      //           //     value: selectedVehicleType.value,
-                      //           //     items: vehicleTypes
-                      //           //         .map(
-                      //           //           (type) => DropdownMenuItem(
-                      //           //             value: type,
-                      //           //             child: Text(type),
-                      //           //           ),
-                      //           //         )
-                      //           //         .toList(),
-                      //           //     onChanged: onVehicleTypeChanged,
-                      //           //   ),
-                      //           // ),
-                      //         ),
-                      //         Obx(() {
-                      //           return ElevatedButton(
-                      //             onPressed:
-                      //                 (startController.value.text.isNotEmpty &&
-                      //                     destinationController
-                      //                         .value
-                      //                         .text
-                      //                         .isNotEmpty &&
-                      //                     waypoints.every(
-                      //                       (c) => c.text.isNotEmpty,
-                      //                     ))
-                      //                 ? () {
-                      //                     // TODO: Calculate best route
-                      //                     print("Calculating best route...");
-                      //                   }
-                      //                 : null,
-                      //             child: const Text("Calculate Best Route"),
-                      //           );
-                      //         }),
-                      //         const SizedBox(height: 16),
-                      //       ],
-                      //     ),
-                      //   ),
-                      // ),
-                    ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ),
+          )
       ),
     );
   }
@@ -549,7 +386,7 @@ class _CarRoutePageState extends State<CarRoutePage> {
                       : Colors.black,
                 );
               }),
-              () {
+                  () {
                 switch (vehicle.consumption) {
                   case 5 || 6.75 || 8.5:
                     return const Text(
