@@ -6,6 +6,8 @@ import 'package:route_optim/vehicle.dart';
 import 'map_page.dart';
 
 class CarRoutePage extends StatefulWidget {
+  const CarRoutePage({super.key});
+
   @override
   State<CarRoutePage> createState() => _CarRoutePageState();
 }
@@ -20,10 +22,13 @@ class _CarRoutePageState extends State<CarRoutePage> {
   final selectedVehicle = Rxn<Vehicle>(null);
 
   final vehicles = <Vehicle>[
-    const Vehicle(name: 'Car 1', ccRange: '1000-1500 cc', fuelType: 'Gasoline'),
-    const Vehicle(name: 'Car 2', ccRange: '2000-2500 cc', fuelType: 'Diesel'),
-    const Vehicle(name: 'Car 3', ccRange: '3000-3500 cc', fuelType: 'Hybrid'),
-    const Vehicle(name: 'Car 4', ccRange: '1500-2000 cc', fuelType: 'Electric'),
+    const Vehicle(name: 'Toyota Corolla', consumption: 6.75, fuelType: 'Petrol'),
+    const Vehicle(name: 'Honda Civic', consumption: 8.5, fuelType: 'Diesel'),
+    const Vehicle(name: 'Ford Focus', consumption: 5.0, fuelType: 'Hybrid'),
+    const Vehicle(name: 'Chevrolet Malibu', consumption: 11.75, fuelType: 'Petrol'),
+    const Vehicle(name: 'Nissan Altima', consumption: 10.25, fuelType: 'Diesel'),
+    const Vehicle(name: 'BMW 3 Series', consumption: 13.5, fuelType: 'Petrol'),
+    const Vehicle(name: 'Audi A4', consumption: 11.5, fuelType: 'Diesel'),
   ].obs;
 
   // final RxString selectedVehicleType = ''.obs;
@@ -463,7 +468,7 @@ class _CarRoutePageState extends State<CarRoutePage> {
             children: [
               Obx(() {
                 return Text(
-                    vehicle.ccRange,
+                    '${vehicle.consumption} L/100km',
                     style: TextStyle(
                         color: vehicle == selectedVehicle.value ? Colors
                             .blueAccent : Colors.black
@@ -496,15 +501,15 @@ class _CarRoutePageState extends State<CarRoutePage> {
                 );
               }),
                   () {
-                switch (vehicle.ccRange) {
-                  case '500-1000 cc' || '1000-1500 cc' || '1500-2000 cc':
+                switch (vehicle.consumption) {
+                  case 5 || 6.75 || 8.5:
                     return const Text(
                       'Low Emission',
                       style: TextStyle(
                           color: Colors.green
                       ),
                     );
-                  case '2000-2500 cc' || '2500-3000 cc':
+                  case 10.25 || 11.75:
                     return Obx(() {
                       return Text(
                         'Medium Emission',
@@ -514,7 +519,7 @@ class _CarRoutePageState extends State<CarRoutePage> {
                         ),
                       );
                     });
-                  case '3000-3500 cc' || '3500-4000 cc':
+                  case 13.5 || 11.5:
                     return Obx(() {
                       return Text(
                         'High Emission',

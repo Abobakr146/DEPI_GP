@@ -1,11 +1,11 @@
 class Vehicle{
   final String name;
-  final String ccRange;
+  final double consumption;
   final String fuelType;
 
   const Vehicle({
     required this.name,
-    required this.ccRange,
+    required this.consumption,
     required this.fuelType,
   });
 }
