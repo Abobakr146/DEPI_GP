@@ -6,8 +6,12 @@ class Trip{
   final double cost;
   final DateTime timestamp;
   final String tripName;
+  final int vehicleId;
+  final bool isFavorite;
 
   const Trip({
+    required this.vehicleId,
+    required this.isFavorite,
     required this.timestamp,
     required this.tripName,
     required this.fuelSaved,
