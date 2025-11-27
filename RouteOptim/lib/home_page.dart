@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:route_optim/car_route_page.dart';
 import 'package:route_optim/profile_page.dart';
+import 'package:route_optim/trip_history_page.dart';
 import 'package:route_optim/trips.dart';
 
 class HomePage extends StatelessWidget {
@@ -38,8 +39,8 @@ class HomePage extends StatelessWidget {
                   color: const Color(0xFF0F2CE8),
                   child: Column(
                     children: [
-                      const ListTile(
-                        leading: Text(
+                      ListTile(
+                        leading: const Text(
                           'Last Trip',
                           style: TextStyle(
                             color: Colors.white,
@@ -47,7 +48,12 @@ class HomePage extends StatelessWidget {
                             // fontWeight: FontWeight.bold,
                           ),
                         ),
-                        trailing: Icon(Icons.history, color: Colors.white),
+                        trailing: IconButton(
+                            onPressed: (){
+                              Get.to(() => const TripHistoryPage());
+                            },
+                            icon: const Icon(Icons.history, color: Colors.white,)
+                        )
                       ),
                       Obx(
                         () => trips.isNotEmpty
