@@ -22,8 +22,7 @@ class MapDirectionsPage extends StatefulWidget {
 
 class _MapDirectionsPageState extends State<MapDirectionsPage> {
   final MapController _mapController = MapController();
-  final TextEditingController _currentLocationController =
-      TextEditingController();
+  final TextEditingController _currentLocationController = TextEditingController();
   final TextEditingController _destinationController = TextEditingController();
   final List<TextEditingController> _waypointControllers = [];
 
@@ -340,6 +339,17 @@ class _MapDirectionsPageState extends State<MapDirectionsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final locations = Get.arguments as List<String>? ?? [];
+    if(locations.isNotEmpty){
+      _currentLocationController.text = locations[0];
+      _destinationController.text = locations.last;
+      locations.removeLast();
+      // add waypoints based on the remaining in the list
+      for(int i=1;i<locations.length;i++){
+        _addWaypoint();
+        _waypointControllers[i-1].text = locations[i];
+      }
+    }
     return Scaffold(
       appBar: AppBar(
         title: const Text('Map and Directions'),

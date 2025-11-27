@@ -46,6 +46,9 @@ class _CarRoutePageState extends State<CarRoutePage> {
 
   final locationsAndDistance = <String>[].obs;
 
+  final locations = <String>[];
+  // add start, destination and waypoints to locations list
+
   var distance = 0.0;
 
   bool allInputsFilled() {
@@ -103,8 +106,6 @@ class _CarRoutePageState extends State<CarRoutePage> {
                                         hintText: "Enter starting location",
                                         border: InputBorder.none,
                                       ),
-                                      onChanged: (value) =>
-                                          print(startController.value.text),
                                     ),
                                   ),
                                   Column(
@@ -153,11 +154,6 @@ class _CarRoutePageState extends State<CarRoutePage> {
                                             "Enter waypoint",
                                             border:
                                             InputBorder.none,
-                                          ),
-                                          onChanged: (value) => print(
-                                            waypoints[index]
-                                                .value
-                                                .text,
                                           ),
                                         ),
                                       ),
@@ -221,8 +217,6 @@ class _CarRoutePageState extends State<CarRoutePage> {
                                         hintText: "Enter destination",
                                         border: InputBorder.none,
                                       ),
-                                      onChanged: (value) =>
-                                          print(destinationController.value.text),
                                     ),
                                   ),
                                   Column(
@@ -313,18 +307,31 @@ class _CarRoutePageState extends State<CarRoutePage> {
     );
   }
 
+  void gatherLocations(){
+    locations.clear();
+    locations.add(startController.text.trim());
+    for (var controller in waypoints) {
+      locations.add(controller.text.trim());
+    }
+    locations.add(destinationController.text.trim());
+  }
+
   Future<void> navigateToMapPage() async {
-    locationsAndDistance.value = await Get.to(() => const MapDirectionsPage());
-    startController.text = locationsAndDistance[0];
-    locationsAndDistance.removeAt(0);
-    distance = locationsAndDistance.last.toDouble();
-    locationsAndDistance.removeLast();
-    destinationController.text = locationsAndDistance.last;
-    locationsAndDistance.removeLast();
-    // add waypoints using the remaining locations in locationsAndDistance
-    waypoints.clear();
-    for (var location in locationsAndDistance) {
-      waypoints.add(TextEditingController(text: location));
+    gatherLocations();
+    locationsAndDistance.value = await Get.to(() => const MapDirectionsPage(), arguments: locations);
+    if(locationsAndDistance.isNotEmpty){
+      Get.snackbar('Result', 'Locations Saved', colorText: Colors.white, backgroundColor: Colors.green);
+      startController.text = locationsAndDistance[0];
+      locationsAndDistance.removeAt(0);
+      distance = locationsAndDistance.last.toDouble();
+      locationsAndDistance.removeLast();
+      destinationController.text = locationsAndDistance.last;
+      locationsAndDistance.removeLast();
+      // add waypoints using the remaining locations in locationsAndDistance
+      waypoints.clear();
+      for (var location in locationsAndDistance) {
+        waypoints.add(TextEditingController(text: location));
+      }
     }
   }
 
