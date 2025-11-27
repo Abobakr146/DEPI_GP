@@ -367,15 +367,20 @@ class _CarRoutePageState extends State<CarRoutePage> {
     if(locationsAndDistance.isNotEmpty){
       Get.snackbar('Result', 'Locations Saved', colorText: Colors.white, backgroundColor: Colors.green);
       startController.value.text = locationsAndDistance[0];
+      startFilled.value = true;
       locationsAndDistance.removeAt(0);
       distance = locationsAndDistance.last.toDouble();
+      destFilled.value = true;
       locationsAndDistance.removeLast();
       destinationController.value.text = locationsAndDistance.last;
       locationsAndDistance.removeLast();
       // add waypoints using the remaining locations in locationsAndDistance
       waypoints.clear();
-      for (var location in locationsAndDistance) {
-        waypoints.add(TextEditingController(text: location));
+      if(locationsAndDistance.isNotEmpty){
+        waypointsFilled.value = true;
+        for (var location in locationsAndDistance) {
+          waypoints.add(TextEditingController(text: location));
+        }
       }
     }
   }
