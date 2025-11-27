@@ -345,7 +345,8 @@ class _CarRoutePageState extends State<CarRoutePage> {
               ),
             );
           }),
-          subtitle: Row(
+          subtitle: Wrap(
+            crossAxisAlignment: WrapCrossAlignment.center,
             spacing: 8,
             children: [
               Obx(() {

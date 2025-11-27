@@ -319,20 +319,22 @@ class _MapDirectionsPageState extends State<MapDirectionsPage> {
   }
 
   // Get all selected locations as a list
-  List<String> _getSelectedLocationsList() {
+  List<String> _getSelectedLocationsAndDistanceList() {
     List<String> locations = [];
     if (_selectedStart != null) locations.add(_selectedStart!.displayName);
     for (var waypoint in _selectedWaypoints) {
       if (waypoint != null) locations.add(waypoint.displayName);
     }
     if (_selectedEnd != null) locations.add(_selectedEnd!.displayName);
+    if (_distance != null) locations.add('$_distance');
     return locations;
   }
 
   // Return to previous page with data
   void _returnWithData() {
-    final locations = _getSelectedLocationsList();
-    Navigator.pop(context, {'locations': locations, 'distance': _distance});
+    final locations = _getSelectedLocationsAndDistanceList();
+    print(locations);
+    Navigator.pop(context, locations);
   }
 
   @override
