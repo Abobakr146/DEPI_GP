@@ -1,3 +1,4 @@
+import 'package:dartx/dartx.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:route_optim/add_vehicle_page.dart';
@@ -43,9 +44,9 @@ class _CarRoutePageState extends State<CarRoutePage> {
     const Vehicle(name: 'Audi A4', consumption: 11.5, fuelType: 'Diesel'),
   ].obs;
 
-  // final RxString selectedVehicleType = ''.obs;
+  final locationsAndDistance = <String>[].obs;
 
-  // final RxString emission = ''.obs;
+  var distance = 0.0;
 
   bool allInputsFilled() {
     bool startFilled = startController.value.text.trim().isNotEmpty;
@@ -109,12 +110,12 @@ class _CarRoutePageState extends State<CarRoutePage> {
                                   Column(
                                     children: [
                                       IconButton(
-                                        onPressed: () {
+                                        onPressed: () async {
                                           // TODO: Open map to select starting point
                                           print(
                                             "Open map to select starting point",
                                           );
-                                          Get.to(() => const MapDirectionsPage());
+                                          navigateToMapPage();
                                         },
                                         icon: const Icon(Icons.location_pin),
                                       ),
@@ -163,12 +164,12 @@ class _CarRoutePageState extends State<CarRoutePage> {
                                       Column(
                                         children: [
                                           IconButton(
-                                            onPressed: () {
+                                            onPressed: () async {
                                               // TODO: Open map to select starting point
                                               print(
                                                 "Open map to select starting point",
                                               );
-                                              Get.to(() => const MapDirectionsPage());
+                                              navigateToMapPage();
                                             },
                                             icon: const Icon(Icons.location_pin),
                                           ),
@@ -227,12 +228,12 @@ class _CarRoutePageState extends State<CarRoutePage> {
                                   Column(
                                     children: [
                                       IconButton(
-                                        onPressed: () {
+                                        onPressed: () async {
                                           // TODO: Open map to select starting point
                                           print(
                                             "Open map to select starting point",
                                           );
-                                          Get.to(() => const MapDirectionsPage());
+                                          navigateToMapPage();
                                         },
                                         icon: const Icon(Icons.location_pin),
                                       ),
@@ -310,6 +311,21 @@ class _CarRoutePageState extends State<CarRoutePage> {
           )
       ),
     );
+  }
+
+  Future<void> navigateToMapPage() async {
+    locationsAndDistance.value = await Get.to(() => const MapDirectionsPage());
+    startController.text = locationsAndDistance[0];
+    locationsAndDistance.removeAt(0);
+    distance = locationsAndDistance.last.toDouble();
+    locationsAndDistance.removeLast();
+    destinationController.text = locationsAndDistance.last;
+    locationsAndDistance.removeLast();
+    // add waypoints using the remaining locations in locationsAndDistance
+    waypoints.clear();
+    for (var location in locationsAndDistance) {
+      waypoints.add(TextEditingController(text: location));
+    }
   }
 
   Widget buildVehicleCard(Vehicle vehicle) {

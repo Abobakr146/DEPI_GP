@@ -1,6 +1,7 @@
 //pk.eyJ1IjoiaGlzaGFtaGF0ZW0iLCJhIjoiY21pYm82ZzJqMHVvbTJsczQwZnBwd20zOSJ9.S39J9fY023DATGzHegv1GA
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:get/get.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -334,7 +335,7 @@ class _MapDirectionsPageState extends State<MapDirectionsPage> {
   void _returnWithData() {
     final locations = _getSelectedLocationsAndDistanceList();
     print(locations);
-    Navigator.pop(context, locations);
+    Get.back(result: locations);
   }
 
   @override
