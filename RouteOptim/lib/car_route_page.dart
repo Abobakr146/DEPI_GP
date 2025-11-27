@@ -90,256 +90,295 @@ class _CarRoutePageState extends State<CarRoutePage> {
         ),
       ),
       body: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: SingleChildScrollView(
-              child: Column(
-                spacing: 8,
-                children: [
-                  SingleChildScrollView(
-                    child: Obx(
-                          () => Column(
-                        spacing: 8,
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Card(
-                            margin: const EdgeInsets.only(bottom: 10),
-                            child: ListTile(
-                              title: const Text("Starting Point"),
-                              subtitle: Row(
-                                spacing: 8,
-                                children: [
-                                  Expanded(
-                                    child: TextField(
-                                      onChanged: (value) {
-                                        startFilled.value = value.trim().isNotEmpty;
-                                      },
-                                      controller: startController.value,
-                                      decoration: const InputDecoration(
-                                        hintText: "Enter starting location",
-                                        border: InputBorder.none,
-                                      ),
-                                    ),
-                                  ),
-                                  Column(
-                                    children: [
-                                      IconButton(
-                                        onPressed: () async {
-                                          print("Open map to select starting point",);
-                                          navigateToMapPage();
-                                        },
-                                        icon: const Icon(Icons.location_pin),
-                                      ),
-                                      IconButton(
-                                        onPressed: () async {
-                                          print("Get current location for starting point");
-                                          startController.value.text = await getCurrentLocationText();
-                                          if(startController.value.text.isNotEmpty){
-                                            Get.snackbar(
-                                                'Success', 'Current location added as starting point',
-                                                colorText: Colors.white,
-                                                backgroundColor: Colors.green
-                                            );
-                                          }
-                                        },
-                                        icon: const Icon(Icons.my_location),
-                                      ),
-                                    ],
-                                  )
-                                ],
-                              ),
-                            ),
-                          ),
-                          waypoints.isNotEmpty ? Column(
-                            children: List.generate(
-                              waypoints.length,
-                                  (index) => Card(
-                                margin: const EdgeInsets.only(bottom: 10,),
-                                child: ListTile(
-                                  title: Text("Waypoint ${index + 1}",),
-                                  subtitle: Row(
-                                    children: [
-                                      Expanded(
-                                        child: TextField(
-                                          onChanged: (value) {
-                                            waypointsFilled.value = waypoints.every((c) => c.text.trim().isNotEmpty);
-                                          },
-                                          controller: waypoints[index],
-                                          decoration: const InputDecoration(
-                                            hintText:
-                                            "Enter waypoint",
-                                            border:
-                                            InputBorder.none,
-                                          ),
-                                        ),
-                                      ),
-                                      Column(
-                                        children: [
-                                          IconButton(
-                                            onPressed: () async {
-                                              print("Open map to select starting point",);
-                                              navigateToMapPage();
-                                            },
-                                            icon: const Icon(Icons.location_pin),
-                                          ),
-                                          IconButton(
-                                            onPressed: () async {
-                                              print("Get current location for waypoint");
-                                              waypoints[index].text = await getCurrentLocationText();
-                                              if(waypoints[index].text.isNotEmpty){
-                                                Get.snackbar(
-                                                    'Success', 'Current location added as waypoint',
-                                                    colorText: Colors.white,
-                                                    backgroundColor: Colors.green
-                                                );
-                                              }
-                                            },
-                                            icon: const Icon(Icons.my_location),
-                                          ),
-                                        ],
-                                      )
-                                    ],
-                                  ),
-                                  trailing: IconButton(
-                                    icon: const Icon(
-                                      Icons.remove_circle,
-                                      color: Colors.red,
-                                    ),
-                                    onPressed: () {
-                                      waypoints.removeAt(index);
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: SingleChildScrollView(
+            child: Column(
+              spacing: 8,
+              children: [
+                SingleChildScrollView(
+                  child: Obx(
+                    () => Column(
+                      spacing: 8,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Card(
+                          margin: const EdgeInsets.only(bottom: 10),
+                          child: ListTile(
+                            title: const Text("Starting Point"),
+                            subtitle: Row(
+                              spacing: 8,
+                              children: [
+                                Expanded(
+                                  child: TextField(
+                                    onChanged: (value) {
+                                      startFilled.value = value
+                                          .trim()
+                                          .isNotEmpty;
                                     },
+                                    controller: startController.value,
+                                    decoration: const InputDecoration(
+                                      hintText: "Enter starting location",
+                                      border: InputBorder.none,
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ),
-                          )
-                              : const SizedBox.shrink(),
-                          ElevatedButton.icon(
-                            onPressed: () {
-                              waypoints.add(TextEditingController());
-                            },
-                            icon: const Icon(Icons.add),
-                            label: const Text("Add Waypoint"),
-                          ),
-                          Card(
-                            margin: const EdgeInsets.only(bottom: 10),
-                            child: ListTile(
-                              title: const Text("Destination"),
-                              subtitle: Row(
-                                spacing: 8,
-                                children: [
-                                  Expanded(
-                                    child: TextField(
-                                      onChanged: (value) {
-                                        destFilled.value = value.trim().isNotEmpty;
-                                      },
-                                      controller: destinationController.value,
-                                      decoration: const InputDecoration(
-                                        hintText: "Enter destination",
-                                        border: InputBorder.none,
-                                      ),
-                                    ),
-                                  ),
-                                  Column(
-                                    children: [
-                                      IconButton(
-                                        onPressed: () async {
-                                          print("Open map to select starting point",);
-                                          navigateToMapPage();
-                                        },
-                                        icon: const Icon(Icons.location_pin),
-                                      ),
-                                      IconButton(
-                                        onPressed: () async {
-                                          print("Get current location for destination");
-                                          destinationController.value.text = await getCurrentLocationText();
-                                          if(destinationController.value.text.isNotEmpty){
-                                            Get.snackbar(
-                                                'Success', 'Current location added as destination',
-                                                colorText: Colors.white,
-                                                backgroundColor: Colors.green
-                                            );
-                                          }
-                                        },
-                                        icon: const Icon(Icons.my_location),
-                                      ),
-                                    ],
-                                  )
-                                ],
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-                          SizedBox(
-                            height: 300,
-                            child: Card(
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Column(
-                                  crossAxisAlignment:
-                                  CrossAxisAlignment.start,
-                                  spacing: 8,
+                                Column(
                                   children: [
-                                    const Text('Choose Vehicle'),
-                                    Expanded(
-                                      child: ListView.builder(
-                                        shrinkWrap: true,
-                                        itemCount: vehicles.length,
-                                        itemBuilder: (ctx, index) {
-                                          return buildVehicleCard(
-                                            vehicles[index],
-                                          );
-                                        },
-                                      ),
-                                    ),
-                                    ElevatedButton.icon(
-                                      onPressed: () {
-                                        Get.to(() => const AddVehiclePage());
+                                    IconButton(
+                                      onPressed: () async {
+                                        print(
+                                          "Open map to select starting point",
+                                        );
+                                        navigateToMapPage();
                                       },
-                                      label: const Text('Add New Vehicle'),
-                                      icon: const Icon(Icons.add),
+                                      icon: const Icon(Icons.location_pin),
                                     ),
-                                    // **********************************************************************************************************
+                                    IconButton(
+                                      onPressed: () async {
+                                        print(
+                                          "Get current location for starting point",
+                                        );
+                                        startController.value.text =
+                                            await getCurrentLocationText();
+                                        if (startController
+                                            .value
+                                            .text
+                                            .isNotEmpty) {
+                                          Get.snackbar(
+                                            'Success',
+                                            'Current location added as starting point',
+                                            colorText: Colors.white,
+                                            backgroundColor: Colors.green,
+                                          );
+                                        }
+                                      },
+                                      icon: const Icon(Icons.my_location),
+                                    ),
                                   ],
                                 ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        waypoints.isNotEmpty
+                            ? Column(
+                                children: List.generate(
+                                  waypoints.length,
+                                  (index) => Card(
+                                    margin: const EdgeInsets.only(bottom: 10),
+                                    child: ListTile(
+                                      title: Text("Waypoint ${index + 1}"),
+                                      subtitle: Row(
+                                        children: [
+                                          Expanded(
+                                            child: TextField(
+                                              onChanged: (value) {
+                                                waypointsFilled
+                                                    .value = waypoints.every(
+                                                  (c) =>
+                                                      c.text.trim().isNotEmpty,
+                                                );
+                                              },
+                                              controller: waypoints[index],
+                                              decoration: const InputDecoration(
+                                                hintText: "Enter waypoint",
+                                                border: InputBorder.none,
+                                              ),
+                                            ),
+                                          ),
+                                          Column(
+                                            children: [
+                                              IconButton(
+                                                onPressed: () async {
+                                                  print(
+                                                    "Open map to select starting point",
+                                                  );
+                                                  navigateToMapPage();
+                                                },
+                                                icon: const Icon(
+                                                  Icons.location_pin,
+                                                ),
+                                              ),
+                                              IconButton(
+                                                onPressed: () async {
+                                                  print(
+                                                    "Get current location for waypoint",
+                                                  );
+                                                  waypoints[index].text =
+                                                      await getCurrentLocationText();
+                                                  if (waypoints[index]
+                                                      .text
+                                                      .isNotEmpty) {
+                                                    Get.snackbar(
+                                                      'Success',
+                                                      'Current location added as waypoint',
+                                                      colorText: Colors.white,
+                                                      backgroundColor:
+                                                          Colors.green,
+                                                    );
+                                                  }
+                                                },
+                                                icon: const Icon(
+                                                  Icons.my_location,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                      trailing: IconButton(
+                                        icon: const Icon(
+                                          Icons.remove_circle,
+                                          color: Colors.red,
+                                        ),
+                                        onPressed: () {
+                                          waypoints.removeAt(index);
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              )
+                            : const SizedBox.shrink(),
+                        ElevatedButton.icon(
+                          onPressed: () {
+                            waypoints.add(TextEditingController());
+                          },
+                          icon: const Icon(Icons.add),
+                          label: const Text("Add Waypoint"),
+                        ),
+                        Card(
+                          margin: const EdgeInsets.only(bottom: 10),
+                          child: ListTile(
+                            title: const Text("Destination"),
+                            subtitle: Row(
+                              spacing: 8,
+                              children: [
+                                Expanded(
+                                  child: TextField(
+                                    onChanged: (value) {
+                                      destFilled.value = value
+                                          .trim()
+                                          .isNotEmpty;
+                                    },
+                                    controller: destinationController.value,
+                                    decoration: const InputDecoration(
+                                      hintText: "Enter destination",
+                                      border: InputBorder.none,
+                                    ),
+                                  ),
+                                ),
+                                Column(
+                                  children: [
+                                    IconButton(
+                                      onPressed: () async {
+                                        print(
+                                          "Open map to select starting point",
+                                        );
+                                        navigateToMapPage();
+                                      },
+                                      icon: const Icon(Icons.location_pin),
+                                    ),
+                                    IconButton(
+                                      onPressed: () async {
+                                        print(
+                                          "Get current location for destination",
+                                        );
+                                        destinationController.value.text =
+                                            await getCurrentLocationText();
+                                        if (destinationController
+                                            .value
+                                            .text
+                                            .isNotEmpty) {
+                                          Get.snackbar(
+                                            'Success',
+                                            'Current location added as destination',
+                                            colorText: Colors.white,
+                                            backgroundColor: Colors.green,
+                                          );
+                                        }
+                                      },
+                                      icon: const Icon(Icons.my_location),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        SizedBox(
+                          height: 300,
+                          child: Card(
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                spacing: 8,
+                                children: [
+                                  const Text('Choose Vehicle'),
+                                  Expanded(
+                                    child: ListView.builder(
+                                      shrinkWrap: true,
+                                      itemCount: vehicles.length,
+                                      itemBuilder: (ctx, index) {
+                                        return buildVehicleCard(
+                                          vehicles[index],
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                  ElevatedButton.icon(
+                                    onPressed: () {
+                                      Get.to(() => const AddVehiclePage());
+                                    },
+                                    label: const Text('Add New Vehicle'),
+                                    icon: const Icon(Icons.add),
+                                  ),
+                                  // **********************************************************************************************************
+                                ],
                               ),
                             ),
                           ),
-                          // ElevatedButton(
-                          //   onPressed: allInputsFilled() && selectedVehicle.value != null ? () {
-                          //     // TODO: Calculate best route
-                          //     print("Calculating best route...");
-                          //     // navigateToMapPage();
-                          //   } : null,
-                          //   child: const Text("Calculate Best Route"),
-                          // ),
-                          Obx(() {
-                            return ElevatedButton(
-                              onPressed: (
-                                startFilled.value &&
-                                destFilled.value &&
-                                (waypoints.isEmpty || waypointsFilled.value) &&
-                                vehiclesSelected.value
-                              ) ? () {
-                                // TODO: Calculate best route
-                                print("Calculating best route...");
-                              } : null,
-                              child: const Text("Get Best Route"),
-                            );
-                          }),
-                        ],
-                      ),
+                        ),
+                        // ElevatedButton(
+                        //   onPressed: allInputsFilled() && selectedVehicle.value != null ? () {
+                        //     // TODO: Calculate best route
+                        //     print("Calculating best route...");
+                        //     // navigateToMapPage();
+                        //   } : null,
+                        //   child: const Text("Calculate Best Route"),
+                        // ),
+                        Obx(() {
+                          return ElevatedButton(
+                            onPressed:
+                                (startFilled.value &&
+                                    destFilled.value &&
+                                    (waypoints.isEmpty ||
+                                        waypointsFilled.value) &&
+                                    vehiclesSelected.value)
+                                ? () {
+                                    // TODO: Calculate best route
+                                    print("Calculating best route...");
+                                  }
+                                : null,
+                            child: const Text("Get Best Route"),
+                          );
+                        }),
+                      ],
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          )
+          ),
+        ),
       ),
     );
   }
 
-  void gatherLocations(){
+  void gatherLocations() {
     locations.clear();
     locations.add(startController.value.text.trim());
     for (var controller in waypoints) {
@@ -351,10 +390,14 @@ class _CarRoutePageState extends State<CarRoutePage> {
   Future<String> getCurrentLocationText() async {
     getLocationPermission();
     final pos = await Geolocator.getCurrentPosition();
-    final placemarks = await placemarkFromCoordinates(pos.latitude, pos.longitude);
+    final placemarks = await placemarkFromCoordinates(
+      pos.latitude,
+      pos.longitude,
+    );
     if (placemarks.isNotEmpty) {
       final placemark = placemarks.first;
-      final address = '${placemark.street}, ${placemark.locality}, ${placemark.country}';
+      final address =
+          '${placemark.street}, ${placemark.locality}, ${placemark.country}';
       return address;
     } else {
       return 'Unknown location';
@@ -363,135 +406,120 @@ class _CarRoutePageState extends State<CarRoutePage> {
 
   Future<void> navigateToMapPage() async {
     gatherLocations();
-    locationsAndDistance.value = await Get.to(() => const MapDirectionsPage(), arguments: locations);
-    if(locationsAndDistance.isNotEmpty){
-      Get.snackbar('Result', 'Locations Saved', colorText: Colors.white, backgroundColor: Colors.green);
-      startController.value.text = locationsAndDistance[0];
+    locationsAndDistance.value = await Get.to(
+      () => const MapDirectionsPage(),
+      arguments: locations,
+    );
+    if (locationsAndDistance.isNotEmpty) {
+      Get.snackbar(
+        'Result',
+        'Locations Saved',
+        colorText: Colors.white,
+        backgroundColor: Colors.green,
+      );
+
+      // Extract the distance (last element)
+      distance = double.parse(locationsAndDistance.last);
+      locationsAndDistance.removeLast();
+
+      // Now we have: [start, waypoint1, waypoint2, ..., destination]
+      // First element is start
+      startController.value.text = locationsAndDistance.first;
       startFilled.value = true;
       locationsAndDistance.removeAt(0);
-      distance = locationsAndDistance.last.toDouble();
-      destFilled.value = true;
-      locationsAndDistance.removeLast();
-      destinationController.value.text = locationsAndDistance.last;
-      locationsAndDistance.removeLast();
-      // add waypoints using the remaining locations in locationsAndDistance
+
+      // Last element is destination
+      if (locationsAndDistance.isNotEmpty) {
+        destinationController.value.text = locationsAndDistance.last;
+        destFilled.value = true;
+        locationsAndDistance.removeLast();
+      }
+
+      // Everything remaining is waypoints
       waypoints.clear();
-      if(locationsAndDistance.isNotEmpty){
+      if (locationsAndDistance.isNotEmpty) {
         waypointsFilled.value = true;
         for (var location in locationsAndDistance) {
           waypoints.add(TextEditingController(text: location));
         }
+      } else {
+        waypointsFilled.value = false;
       }
     }
   }
 
   Widget buildVehicleCard(Vehicle vehicle) {
     return Obx(() {
+      final bool isSelected = vehicle == selectedVehicle.value;
       return Card(
         margin: const EdgeInsets.only(bottom: 8),
-        color: vehicle == selectedVehicle.value
-            ? const Color(0x9677A3F1)
-            : Colors.white,
+        color: isSelected ? const Color(0x9677A3F1) : Colors.white,
         child: ListTile(
           onTap: () {
             selectedVehicle.value = vehicle;
             vehiclesSelected.value = true;
           },
-          trailing: vehicle == selectedVehicle.value
+          trailing: isSelected
               ? const Icon(Icons.check_circle, color: Colors.blueAccent)
               : null,
-          leading: Obx(() {
-            return Icon(
-              Icons.directions_car,
-              color: vehicle == selectedVehicle.value
-                  ? Colors.blueAccent
-                  : Colors.black,
-            );
-          }),
-          title: Obx(() {
-            return Text(
-              vehicle.name,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: vehicle == selectedVehicle.value
-                    ? Colors.blueAccent
-                    : Colors.black,
-              ),
-            );
-          }),
+          leading: Icon(
+            Icons.directions_car,
+            color: isSelected ? Colors.blueAccent : Colors.black,
+          ),
+          title: Text(
+            vehicle.name,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: isSelected ? Colors.blueAccent : Colors.black,
+            ),
+          ),
           subtitle: Wrap(
             crossAxisAlignment: WrapCrossAlignment.center,
             spacing: 8,
             children: [
-              Obx(() {
-                return Text(
-                  '${vehicle.consumption} L/100km',
-                  style: TextStyle(
-                    color: vehicle == selectedVehicle.value
-                        ? Colors.blueAccent
-                        : Colors.black,
-                  ),
-                );
-              }),
-              Obx(() {
-                return Icon(
-                  Icons.circle,
-                  size: 6,
-                  color: vehicle == selectedVehicle.value
-                      ? Colors.blueAccent
-                      : Colors.black,
-                );
-              }),
-              Obx(() {
-                return Text(
-                  vehicle.fuelType,
-                  style: TextStyle(
-                    color: vehicle == selectedVehicle.value
-                        ? Colors.blueAccent
-                        : Colors.black,
-                  ),
-                );
-              }),
-              Obx(() {
-                return Icon(
-                  Icons.circle,
-                  size: 6,
-                  color: vehicle == selectedVehicle.value
-                      ? Colors.blueAccent
-                      : Colors.black,
-                );
-              }),
-                  () {
-                switch (vehicle.consumption) {
-                  case 5 || 6.75 || 8.5:
-                    return const Text(
-                      'Low Emission',
-                      style: TextStyle(color: Colors.green),
-                    );
-                  case 10.25 || 11.75:
-                    return Obx(() {
-                      return Text(
-                        'Medium Emission',
-                        style: TextStyle(
-                          color: vehicle == selectedVehicle.value
-                              ? Colors.orange
-                              : Colors.orange,
-                        ),
-                      );
-                    });
-                  case 13.5 || 11.5:
-                    return Obx(() {
-                      return Text(
-                        'High Emission',
-                        style: TextStyle(
-                          color: vehicle == selectedVehicle.value
-                              ? Colors.redAccent
-                              : Colors.red,
-                        ),
-                      );
-                    });
-                  default:
-                    return const Text('Emissions: Unknown');
+              Text(
+                '${vehicle.consumption} L/100km',
+                style: TextStyle(
+                  color: isSelected ? Colors.blueAccent : Colors.black,
+                ),
+              ),
+              Icon(
+                Icons.circle,
+                size: 6,
+                color: isSelected ? Colors.blueAccent : Colors.black,
+              ),
+              Text(
+                vehicle.fuelType,
+                style: TextStyle(
+                  color: isSelected ? Colors.blueAccent : Colors.black,
+                ),
+              ),
+              Icon(
+                Icons.circle,
+                size: 6,
+                color: isSelected ? Colors.blueAccent : Colors.black,
+              ),
+              // Emission label
+              () {
+                if (vehicle.consumption <= 8.5) {
+                  return const Text(
+                    'Low Emission',
+                    style: TextStyle(color: Colors.green),
+                  );
+                } else if (vehicle.consumption <= 11.75) {
+                  return Text(
+                    'Medium Emission',
+                    style: TextStyle(
+                      color: isSelected ? Colors.orange : Colors.orange,
+                    ),
+                  );
+                } else {
+                  return Text(
+                    'High Emission',
+                    style: TextStyle(
+                      color: isSelected ? Colors.redAccent : Colors.red,
+                    ),
+                  );
                 }
               }(),
             ],
@@ -539,5 +567,4 @@ class _CarRoutePageState extends State<CarRoutePage> {
       return;
     }
   }
-
 }
