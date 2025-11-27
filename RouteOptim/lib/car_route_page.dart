@@ -1,5 +1,7 @@
 import 'package:dartx/dartx.dart';
 import 'package:flutter/material.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:route_optim/add_vehicle_page.dart';
 import 'package:route_optim/vehicle.dart';
@@ -14,11 +16,11 @@ class CarRoutePage extends StatefulWidget {
 }
 
 class _CarRoutePageState extends State<CarRoutePage> {
-  final startController = TextEditingController();
+  final startController = TextEditingController().obs;
 
   final waypoints = <TextEditingController>[].obs;
 
-  final destinationController = TextEditingController();
+  final destinationController = TextEditingController().obs;
 
   final selectedVehicle = Rxn<Vehicle>(null);
 
@@ -51,19 +53,27 @@ class _CarRoutePageState extends State<CarRoutePage> {
 
   var distance = 0.0;
 
-  bool allInputsFilled() {
-    bool startFilled = startController.value.text.trim().isNotEmpty;
-    bool destFilled = destinationController.value.text.trim().isNotEmpty;
-    bool waypointsFilled = waypoints.every((c) => c.text.trim().isNotEmpty);
-    return startFilled && destFilled && waypointsFilled;
-  }
+  var startFilled = false.obs;
+  var destFilled = false.obs;
+  var waypointsFilled = false.obs;
+  var vehiclesSelected = false.obs;
+
+  // bool allInputsFilled() {
+  //   bool startFilled = startController.value.text.trim().isNotEmpty;
+  //   bool destFilled = destinationController.value.text.trim().isNotEmpty;
+  //   if(waypoints.isEmpty){
+  //     return startFilled && destFilled;
+  //   }
+  //   bool waypointsFilled = waypoints.every((c) => c.text.trim().isNotEmpty);
+  //   return startFilled && destFilled && waypointsFilled;
+  // }
 
   @override
   void dispose() {
     // TODO: implement dispose
     //dispose all TextEditing Controllers
-    startController.dispose();
-    destinationController.dispose();
+    startController.value.dispose();
+    destinationController.value.dispose();
     for (var controller in waypoints) {
       controller.dispose();
     }
@@ -101,7 +111,10 @@ class _CarRoutePageState extends State<CarRoutePage> {
                                 children: [
                                   Expanded(
                                     child: TextField(
-                                      controller: startController,
+                                      onChanged: (value) {
+                                        startFilled.value = value.trim().isNotEmpty;
+                                      },
+                                      controller: startController.value,
                                       decoration: const InputDecoration(
                                         hintText: "Enter starting location",
                                         border: InputBorder.none,
@@ -112,20 +125,22 @@ class _CarRoutePageState extends State<CarRoutePage> {
                                     children: [
                                       IconButton(
                                         onPressed: () async {
-                                          // TODO: Open map to select starting point
-                                          print(
-                                            "Open map to select starting point",
-                                          );
+                                          print("Open map to select starting point",);
                                           navigateToMapPage();
                                         },
                                         icon: const Icon(Icons.location_pin),
                                       ),
                                       IconButton(
-                                        onPressed: () {
-
-                                          // TODO: Get current location using geolocator package and put the text in the destinationController
-                                          print("Open map to select starting point");
-
+                                        onPressed: () async {
+                                          print("Get current location for starting point");
+                                          startController.value.text = await getCurrentLocationText();
+                                          if(startController.value.text.isNotEmpty){
+                                            Get.snackbar(
+                                                'Success', 'Current location added as starting point',
+                                                colorText: Colors.white,
+                                                backgroundColor: Colors.green
+                                            );
+                                          }
                                         },
                                         icon: const Icon(Icons.my_location),
                                       ),
@@ -146,10 +161,11 @@ class _CarRoutePageState extends State<CarRoutePage> {
                                     children: [
                                       Expanded(
                                         child: TextField(
-                                          controller:
-                                          waypoints[index],
-                                          decoration:
-                                          const InputDecoration(
+                                          onChanged: (value) {
+                                            waypointsFilled.value = waypoints.every((c) => c.text.trim().isNotEmpty);
+                                          },
+                                          controller: waypoints[index],
+                                          decoration: const InputDecoration(
                                             hintText:
                                             "Enter waypoint",
                                             border:
@@ -161,20 +177,22 @@ class _CarRoutePageState extends State<CarRoutePage> {
                                         children: [
                                           IconButton(
                                             onPressed: () async {
-                                              // TODO: Open map to select starting point
-                                              print(
-                                                "Open map to select starting point",
-                                              );
+                                              print("Open map to select starting point",);
                                               navigateToMapPage();
                                             },
                                             icon: const Icon(Icons.location_pin),
                                           ),
                                           IconButton(
-                                            onPressed: () {
-
-                                              // TODO: Get current location using geolocator package and put the text in the destinationController
-                                              print("Open map to select starting point");
-
+                                            onPressed: () async {
+                                              print("Get current location for waypoint");
+                                              waypoints[index].text = await getCurrentLocationText();
+                                              if(waypoints[index].text.isNotEmpty){
+                                                Get.snackbar(
+                                                    'Success', 'Current location added as waypoint',
+                                                    colorText: Colors.white,
+                                                    backgroundColor: Colors.green
+                                                );
+                                              }
                                             },
                                             icon: const Icon(Icons.my_location),
                                           ),
@@ -212,7 +230,10 @@ class _CarRoutePageState extends State<CarRoutePage> {
                                 children: [
                                   Expanded(
                                     child: TextField(
-                                      controller: destinationController,
+                                      onChanged: (value) {
+                                        destFilled.value = value.trim().isNotEmpty;
+                                      },
+                                      controller: destinationController.value,
                                       decoration: const InputDecoration(
                                         hintText: "Enter destination",
                                         border: InputBorder.none,
@@ -223,20 +244,22 @@ class _CarRoutePageState extends State<CarRoutePage> {
                                     children: [
                                       IconButton(
                                         onPressed: () async {
-                                          // TODO: Open map to select starting point
-                                          print(
-                                            "Open map to select starting point",
-                                          );
+                                          print("Open map to select starting point",);
                                           navigateToMapPage();
                                         },
                                         icon: const Icon(Icons.location_pin),
                                       ),
                                       IconButton(
-                                        onPressed: () {
-
-                                          // TODO: Get current location using geolocator package and put the text in the destinationController
-                                          print("Open map to select starting point");
-
+                                        onPressed: () async {
+                                          print("Get current location for destination");
+                                          destinationController.value.text = await getCurrentLocationText();
+                                          if(destinationController.value.text.isNotEmpty){
+                                            Get.snackbar(
+                                                'Success', 'Current location added as destination',
+                                                colorText: Colors.white,
+                                                backgroundColor: Colors.green
+                                            );
+                                          }
                                         },
                                         icon: const Icon(Icons.my_location),
                                       ),
@@ -271,7 +294,7 @@ class _CarRoutePageState extends State<CarRoutePage> {
                                     ),
                                     ElevatedButton.icon(
                                       onPressed: () {
-                                        Get.to(() => AddVehiclePage());
+                                        Get.to(() => const AddVehiclePage());
                                       },
                                       label: const Text('Add New Vehicle'),
                                       icon: const Icon(Icons.add),
@@ -282,19 +305,28 @@ class _CarRoutePageState extends State<CarRoutePage> {
                               ),
                             ),
                           ),
-                          // Obx(() {
-                          //   return ElevatedButton(
-                          //     onPressed:
-                          //     (startController.text.isNotEmpty &&
-                          //         destinationController.text.isNotEmpty &&
-                          //         waypoints.every((c) => c.text.isNotEmpty,)) ? () {
-                          //       // TODO: Calculate best route
-                          //       print("Calculating best route...");
-                          //     } : null,
-                          //     child: const Text("Get Best Route"),
-                          //   );
-                          // }),
-                          const SizedBox(height: 16),
+                          // ElevatedButton(
+                          //   onPressed: allInputsFilled() && selectedVehicle.value != null ? () {
+                          //     // TODO: Calculate best route
+                          //     print("Calculating best route...");
+                          //     // navigateToMapPage();
+                          //   } : null,
+                          //   child: const Text("Calculate Best Route"),
+                          // ),
+                          Obx(() {
+                            return ElevatedButton(
+                              onPressed: (
+                                startFilled.value &&
+                                destFilled.value &&
+                                (waypoints.isEmpty || waypointsFilled.value) &&
+                                vehiclesSelected.value
+                              ) ? () {
+                                // TODO: Calculate best route
+                                print("Calculating best route...");
+                              } : null,
+                              child: const Text("Get Best Route"),
+                            );
+                          }),
                         ],
                       ),
                     ),
@@ -309,11 +341,24 @@ class _CarRoutePageState extends State<CarRoutePage> {
 
   void gatherLocations(){
     locations.clear();
-    locations.add(startController.text.trim());
+    locations.add(startController.value.text.trim());
     for (var controller in waypoints) {
       locations.add(controller.text.trim());
     }
-    locations.add(destinationController.text.trim());
+    locations.add(destinationController.value.text.trim());
+  }
+
+  Future<String> getCurrentLocationText() async {
+    getLocationPermission();
+    final pos = await Geolocator.getCurrentPosition();
+    final placemarks = await placemarkFromCoordinates(pos.latitude, pos.longitude);
+    if (placemarks.isNotEmpty) {
+      final placemark = placemarks.first;
+      final address = '${placemark.street}, ${placemark.locality}, ${placemark.country}';
+      return address;
+    } else {
+      return 'Unknown location';
+    }
   }
 
   Future<void> navigateToMapPage() async {
@@ -321,11 +366,11 @@ class _CarRoutePageState extends State<CarRoutePage> {
     locationsAndDistance.value = await Get.to(() => const MapDirectionsPage(), arguments: locations);
     if(locationsAndDistance.isNotEmpty){
       Get.snackbar('Result', 'Locations Saved', colorText: Colors.white, backgroundColor: Colors.green);
-      startController.text = locationsAndDistance[0];
+      startController.value.text = locationsAndDistance[0];
       locationsAndDistance.removeAt(0);
       distance = locationsAndDistance.last.toDouble();
       locationsAndDistance.removeLast();
-      destinationController.text = locationsAndDistance.last;
+      destinationController.value.text = locationsAndDistance.last;
       locationsAndDistance.removeLast();
       // add waypoints using the remaining locations in locationsAndDistance
       waypoints.clear();
@@ -345,6 +390,7 @@ class _CarRoutePageState extends State<CarRoutePage> {
         child: ListTile(
           onTap: () {
             selectedVehicle.value = vehicle;
+            vehiclesSelected.value = true;
           },
           trailing: vehicle == selectedVehicle.value
               ? const Icon(Icons.check_circle, color: Colors.blueAccent)
@@ -449,4 +495,44 @@ class _CarRoutePageState extends State<CarRoutePage> {
       );
     });
   }
+
+  // Function to get location permission
+  Future<void> getLocationPermission() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    // Test if location services are enabled.
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      // Location services are not enabled don't continue
+      // accessing the position and request users of the
+      // App to enable the location services.
+      Get.snackbar('Error', 'Location services are disabled');
+      return;
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        // Permissions are denied, next time you could try
+        // requesting permissions again (this is also where
+        // Android's shouldShowRequestPermissionRationale
+        // returned true. According to Android guidelines
+        // your App should show an explanatory UI now.
+        Get.snackbar('Error', 'Location permissions are denied');
+        return;
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      // Permissions are denied forever, handle appropriately.
+      Get.snackbar(
+        'Error',
+        'Location permissions are permanently denied, we cannot request permissions.',
+      );
+      return;
+    }
+  }
+
 }
