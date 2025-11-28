@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:route_optim/car_route_page.dart';
 import 'package:route_optim/vehicle.dart';
 import 'package:route_optim/vehicle_service.dart';
 
@@ -11,14 +13,17 @@ class AddVehiclePage extends StatefulWidget {
 
 class _AddVehiclePageState extends State<AddVehiclePage> {
   final vehicleNameController = TextEditingController();
+  final vehicleNameEmpty = true.obs;
 
   final ccRangeController = TextEditingController();
-  var  consumption;
+  final consumption = 0.0.obs;
 
   final fuelTypeController = TextEditingController();
-  var fuelType;
+  final fuelType = ''.obs;
 
   final vehicleService = VehicleService();
+
+  final isLoading = false.obs;
 
   @override
   void dispose() {
@@ -61,11 +66,15 @@ class _AddVehiclePageState extends State<AddVehiclePage> {
                       children: [
                         const Text('Vehicle Name'),
                         TextField(
+                          onChanged: (value) {
+                            vehicleNameEmpty.value = value.isEmpty;
+                          },
                           controller: vehicleNameController,
                           decoration: const InputDecoration(
                               hintText: 'Enter vehicle name',
                               border: OutlineInputBorder(
-                                borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                                borderRadius: BorderRadius.all(
+                                    Radius.circular(8.0)),
                               )
                           ),
                         ),
@@ -101,16 +110,21 @@ class _AddVehiclePageState extends State<AddVehiclePage> {
                           ),
                           dropdownMenuEntries: const [
                             DropdownMenuEntry(value: 5, label: '500-1000 cc'),
-                            DropdownMenuEntry(value: 6.75, label: '1000-1500 cc'),
-                            DropdownMenuEntry(value: 8.5, label: '1500-2000 cc'),
-                            DropdownMenuEntry(value: 10.25, label: '2000-2500 cc'),
-                            DropdownMenuEntry(value: 11.75, label: '2500-3000 cc'),
-                            DropdownMenuEntry(value: 13.5, label: '3000-3500 cc'),
-                            DropdownMenuEntry(value: 15.5, label: '3500-4000 cc'),
+                            DropdownMenuEntry(
+                                value: 6.75, label: '1000-1500 cc'),
+                            DropdownMenuEntry(
+                                value: 8.5, label: '1500-2000 cc'),
+                            DropdownMenuEntry(
+                                value: 10.25, label: '2000-2500 cc'),
+                            DropdownMenuEntry(
+                                value: 11.75, label: '2500-3000 cc'),
+                            DropdownMenuEntry(
+                                value: 13.5, label: '3000-3500 cc'),
+                            DropdownMenuEntry(
+                                value: 15.5, label: '3500-4000 cc'),
                           ],
                           onSelected: (double? value) {
-                            consumption = value;
-                            // ccRangeController.text = ;
+                            consumption.value = value!;
                             print('Selected consumption: $consumption');
                             print('Controller text: ${ccRangeController.text}');
                           },
@@ -146,34 +160,76 @@ class _AddVehiclePageState extends State<AddVehiclePage> {
                             ),
                           ),
                           dropdownMenuEntries: const [
-                            DropdownMenuEntry(value: 'Gasoline 80', label: 'Gasoline 80'),
-                            DropdownMenuEntry(value: 'Gasoline 92', label: 'Gasoline 92'),
-                            DropdownMenuEntry(value: 'Gasoline 95', label: 'Gasoline 95'),
-                            DropdownMenuEntry(value: 'Solar', label: 'Diesel - Solar'),
+                            DropdownMenuEntry(
+                                value: 'Gasoline 80', label: 'Gasoline 80'),
+                            DropdownMenuEntry(
+                                value: 'Gasoline 92', label: 'Gasoline 92'),
+                            DropdownMenuEntry(
+                                value: 'Gasoline 95', label: 'Gasoline 95'),
+                            DropdownMenuEntry(
+                                value: 'Solar', label: 'Diesel - Solar'),
                           ],
                           onSelected: (String? value) {
-                            fuelType = value;
+                            fuelType.value = value!;
                           },
                         ),
                       ],
                     ),
                   ),
                 ),
-                ElevatedButton(
-                    onPressed: (){
-                      // TODO: Save vehicle logic and clear fields
-                      print('Vehicle Name: ${vehicleNameController.text}');
-                      print('Consumption: $consumption L/100km');
-                      print('Fuel Type: $fuelType');
-                      final vehicle = Vehicle(
-                          manufacture: vehicleNameController.text,
-                          consumption: consumption,
-                          fuelType: fuelType
-                      );
-                      vehicleService.addVehicle(vehicle);
-                    },
-                    child: const Text('Save Vehicle')
-                ),
+                Obx(() {
+                  return ElevatedButton(
+                      // style: ElevatedButton.styleFrom(
+                      //   disabledBackgroundColor: Colors.grey,
+                      //   disabledForegroundColor: Colors.grey,
+                      // ),
+                      onPressed: (!isLoading.value &&
+                          !vehicleNameEmpty.value &&
+                          consumption.value > 0 &&
+                          fuelType.value.isNotEmpty
+                      ) ? () async {
+                        // TODO: Save vehicle logic and clear fields
+                        isLoading.value = true;
+                        print('Vehicle Name: ${vehicleNameController.text}');
+                        print('Consumption: $consumption L/100km');
+                        print('Fuel Type: $fuelType');
+                        final vehicle = Vehicle(
+                            manufacture: vehicleNameController.text,
+                            consumption: consumption.value,
+                            fuelType: fuelType.value
+                        );
+                        final success = await vehicleService.addVehicle(vehicle);
+                        if (success) {
+                          vehicleNameController.clear();
+                          ccRangeController.clear();
+                          fuelTypeController.clear();
+                          vehicles.add(vehicle);
+                          Get.back();
+                          isLoading.value = false;
+                          Get.snackbar(
+                              'Success',
+                              'Vehicle added successfully',
+                              snackPosition: SnackPosition.BOTTOM,
+                              backgroundColor: Colors.green,
+                              colorText: Colors.white
+                          );
+                        } else {
+                          Get.snackbar(
+                              'Error',
+                              'Failed to add vehicle',
+                              snackPosition: SnackPosition.BOTTOM,
+                              backgroundColor: Colors.red,
+                              colorText: Colors.white
+                          );
+                        }
+                      } : null,
+                      child: !isLoading.value
+                          ? const Text('Save Vehicle')
+                          : const Center(
+                          child: CircularProgressIndicator(color: Colors
+                              .white,))
+                  );
+                }),
               ],
             ),
           ),

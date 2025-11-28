@@ -13,11 +13,13 @@ class Vehicle {
   final String manufacture;
   final String fuelType;
   final double consumption;
+  String? userId;
 
   Vehicle({
     required this.manufacture,
     required this.fuelType,
     required this.consumption,
+    this.userId,
   });
 
   factory Vehicle.fromJson(Map<String, dynamic> json) => Vehicle(
@@ -30,5 +32,6 @@ class Vehicle {
     "manufacture": manufacture,
     "fuel_type": fuelType,
     "consumption": consumption,
+    "user_id": userId,
   };
 }

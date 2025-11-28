@@ -15,9 +15,16 @@ class VehicleService extends GetxService {
     return vehicles;
   }
 
-  Future<void> addVehicle(Vehicle vehicle) async {
+  Future<bool> addVehicle(Vehicle vehicle) async {
     print('Adding vehicle to database...');
-    final response = await cloud.from('Vehicle').insert(vehicle.toJson());
-    print(response);
+    try{
+      vehicle.userId = user!.id;
+      await cloud.from('Vehicle').insert(vehicle.toJson());
+      print('Vehicle added successfully.');
+      return true;
+    } on Exception catch(e){
+      print('Error adding vehicle: $e');
+      return false;
+    }
   }
 }

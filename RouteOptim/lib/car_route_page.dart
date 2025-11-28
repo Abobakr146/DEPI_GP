@@ -9,6 +9,10 @@ import 'package:route_optim/vehicle_service.dart';
 
 import 'map_page.dart';
 
+
+final vehicles = <Vehicle>[].obs;
+
+
 class CarRoutePage extends StatefulWidget {
   const CarRoutePage({super.key});
 
@@ -24,8 +28,6 @@ class _CarRoutePageState extends State<CarRoutePage> {
   final destinationController = TextEditingController().obs;
 
   final selectedVehicle = Rxn<Vehicle>(null);
-
-  final vehicles = <Vehicle>[].obs;
 
   final locationsAndDistance = <String>[].obs;
 
