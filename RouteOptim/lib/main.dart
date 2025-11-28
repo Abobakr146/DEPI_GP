@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:get/get_navigation/src/root/get_material_app.dart';
+import 'package:get/get.dart';
 import 'package:route_optim/home_page.dart';
+import 'package:route_optim/login_page.dart';
 import 'package:route_optim/theme_data.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -23,7 +24,8 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
-      home: HomePage(),
+      home: LoginPage(),
+      title: 'Route Optimization',
     );
   }
 }

@@ -8,9 +8,9 @@ import 'package:route_optim/trips.dart';
 class HomePage extends StatelessWidget {
   HomePage({super.key});
 
-  final trips =
-      <Trip>[].obs; // ......... load all trips from database .........
+  final trips = <Trip>[].obs;
 
+ // ......... load all trips from database .........
   @override
   Widget build(BuildContext context) {
     return Scaffold(
