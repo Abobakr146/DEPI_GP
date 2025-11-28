@@ -2,63 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:route_optim/trips.dart';
 
-class TripHistoryPage extends StatefulWidget {
-  const TripHistoryPage({super.key});
+class FavoriteTripsPage extends StatefulWidget {
+  const FavoriteTripsPage({super.key});
 
   @override
-  State<TripHistoryPage> createState() => _TripHistoryPageState();
+  State<FavoriteTripsPage> createState() => _FavoriteTripsPageState();
 }
 
-class _TripHistoryPageState extends State<TripHistoryPage> {
-  final tripHistoryList = <Trip>[
-    Trip(
-        tripName: 'Downtown to Airport',
-        timestamp: DateTime(2024, 11, 25),
-        distance: 24.5,
-        fuelUsed: 2.1,
-        cost: 3.85,
-        fuelSaved: 0.3,
-        moneySaved: 1.50,
-        vehicleId: 1,
-        isFavorite: true,
-        wayPoints: ['Downtown Plaza', 'International Airport']),
-    Trip(
-        tripName: 'Weekend Roadtrip',
-        timestamp: DateTime.now().subtract(const Duration(days: 3)),
-        distance: 120.0,
-        fuelUsed: 9.5,
-        cost: 45.0,
-        fuelSaved: 2.0,
-        moneySaved: 10.0,
-        vehicleId: 1,
-        isFavorite: true,
-        wayPoints: ['City A', 'Scenic Viewpoint', 'City B']),
-    Trip(
-        tripName: 'Grocery Run',
-        timestamp: DateTime.now().subtract(const Duration(hours: 5)),
-        distance: 5.2,
-        fuelUsed: 0.5,
-        cost: 2.25,
-        fuelSaved: 0.1,
-        moneySaved: 0.5,
-        vehicleId: 2,
-        isFavorite: false,
-        wayPoints: ['Home', 'Supermarket', 'Home']),
-  ].obs;
-
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   fetchTripHistory();
-  // }
-  //
-  // Future<void> fetchTripHistory() async {
-  //   tripHistoryList.clear();
-  //   for (int i = 0; i < userVehicleTrips.length; i++) {
-  //     tripHistoryList.add(userVehicleTrips.getAt(i) as Trip);
-  //   }
-  // }
-
+class _FavoriteTripsPageState extends State<FavoriteTripsPage> {
   String _getMonthAbbreviation(int month) {
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     return months[month - 1];
@@ -116,17 +67,43 @@ class _TripHistoryPageState extends State<TripHistoryPage> {
     return waypointWidgets;
   }
 
+  final favoriteTrips = <Trip>[
+    Trip(
+        tripName: 'Downtown to Airport',
+        timestamp: DateTime(2024, 11, 25),
+        distance: 24.5,
+        fuelUsed: 2.1,
+        cost: 3.85,
+        fuelSaved: 0.3,
+        moneySaved: 1.50,
+        vehicleId: 1,
+        isFavorite: true,
+        wayPoints: ['Downtown Plaza', 'International Airport']),
+    Trip(
+        tripName: 'Weekend Roadtrip',
+        timestamp: DateTime.now().subtract(const Duration(days: 3)),
+        distance: 120.0,
+        fuelUsed: 9.5,
+        cost: 45.0,
+        fuelSaved: 2.0,
+        moneySaved: 10.0,
+        vehicleId: 1,
+        isFavorite: true,
+        wayPoints: ['City A', 'Scenic Viewpoint', 'City B']),
+  ].obs;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Trip History')),
+      appBar: AppBar(
+        title: const Text('Favorite Trips'),
+      ),
       body: Obx(
             () => ListView.separated(
           padding: const EdgeInsets.all(8.0),
-          itemCount: tripHistoryList.length,
+          itemCount: favoriteTrips.length,
           separatorBuilder: (context, index) => const SizedBox(height: 8),
           itemBuilder: (context, index) {
-            final trip = tripHistoryList[index];
+            final trip = favoriteTrips[index];
             final isFav = trip.isFavorite.obs;
             return Card(
               margin: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -147,43 +124,22 @@ class _TripHistoryPageState extends State<TripHistoryPage> {
                             Text(trip.tripName, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                           ],
                         ),
-                        Row(
-                          children: [
-                            Container(
-                              width: 32,
-                              height: 32,
-                              margin: const EdgeInsets.symmetric(horizontal: 4),
-                              decoration: BoxDecoration(
-                                color: Colors.amber.withValues(alpha: 0.2),
-                                shape: BoxShape.circle,
-                              ),
-                              child: IconButton(
-                                padding: EdgeInsets.zero,
-                                icon:
-                                Obx(() => Icon(isFav.value ? Icons.star : Icons.star_border, color: Colors.amber, size: 20)),
-                                onPressed: () {
-                                  isFav.value = !trip.isFavorite;
-                                  trip.isFavorite = isFav.value; // Update the trip's isFavorite property
-                                },
-                              ),
-                            ),
-                            Container(
-                              width: 32,
-                              height: 32,
-                              margin: const EdgeInsets.symmetric(horizontal: 4),
-                              decoration: BoxDecoration(
-                                color: Colors.red.withValues(alpha: 0.1),
-                                shape: BoxShape.circle,
-                              ),
-                              child: IconButton(
-                                padding: EdgeInsets.zero,
-                                icon: const Icon(Icons.delete, color: Colors.red, size: 20),
-                                onPressed: () {
-                                  tripHistoryList.removeAt(index);
-                                },
-                              ),
-                            ),
-                          ],
+                        Container(
+                          width: 32,
+                          height: 32,
+                          margin: const EdgeInsets.symmetric(horizontal: 4),
+                          decoration: BoxDecoration(
+                            color: Colors.amber.withValues(alpha: 0.2),
+                            shape: BoxShape.circle,
+                          ),
+                          child: IconButton(
+                            padding: EdgeInsets.zero,
+                            icon: Obx(() => Icon(isFav.value ? Icons.star : Icons.star_border, color: Colors.amber, size: 20)),
+                            onPressed: () {
+                              isFav.value = !trip.isFavorite;
+                              trip.isFavorite = isFav.value;
+                            },
+                          ),
                         ),
                       ],
                     ),

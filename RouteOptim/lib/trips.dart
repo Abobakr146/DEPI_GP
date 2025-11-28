@@ -7,17 +7,19 @@ class Trip{
   final DateTime timestamp;
   final String tripName;
   final int vehicleId;
-  final bool isFavorite;
+  bool isFavorite;
+  final List<String> wayPoints;
 
-  const Trip({
+  Trip({
     required this.vehicleId,
-    required this.isFavorite,
+    this.isFavorite = false,
     required this.timestamp,
     required this.tripName,
     required this.fuelSaved,
     required this.fuelUsed,
     required this.distance,
     required this.moneySaved,
-    required this.cost
+    required this.cost,
+    required this.wayPoints
   });
 }
