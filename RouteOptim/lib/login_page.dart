@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:route_optim/home_page.dart';
+import 'package:route_optim/user.dart';
 
 import 'admin_page.dart';
 import 'auth_service.dart';
 import 'main.dart';
+
+
+User? user;
+
 
 class LoginPage extends StatefulWidget {
   LoginPage({super.key});
@@ -19,6 +24,7 @@ class _LoginPageState extends State<LoginPage> {
 
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+  final nameController = TextEditingController();
   final enableButton = false.obs;
   final firstSwitchValue = ''.obs;
   final isSelected = 'sign in'.obs;
@@ -29,6 +35,7 @@ class _LoginPageState extends State<LoginPage> {
     // TODO: implement dispose
     emailController.dispose();
     passwordController.dispose();
+    nameController.dispose();
     super.dispose();
   }
 
@@ -44,11 +51,11 @@ class _LoginPageState extends State<LoginPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  SizedBox(
-                    height: 50,
-                    child: Image.asset('assets/images/information.png'),
-                  ),
-                  const SizedBox(height: 20,),
+                  // SizedBox(
+                  //   height: 50,
+                  //   child: Image.asset('assets/images/information.png'),
+                  // ),
+                  // const SizedBox(height: 20,),
                   const Text('Help Desk Portal', style: TextStyle(fontSize: 20,
                       fontWeight: FontWeight.bold,
                       color: Colors.black)),
@@ -164,15 +171,13 @@ class _LoginPageState extends State<LoginPage> {
             child: ElevatedButton(
               onPressed: (enableButton.value && !isLoading.value) ? () async {
                 isLoading.value = true;
-                final result = await authService.login(emailController.text, passwordController.text);
+                user = await authService.login(emailController.text, passwordController.text);
                 isLoading.value = false;
-                if (result) {
-                  final user = cloud.auth.currentUser;
-                  final type = await cloud.from('User').select('role').eq('UID', user!.id).single();
-                  Get.off(type['role'] ? const AdminPage() : HomePage());
+                if (user != null) {
+                  Get.off(() => user!.role ? const AdminPage() : HomePage());
                   Get.snackbar(
                     'Result',
-                    'Welcome Back!',
+                    'Welcome back ${user!.name.split(' ')[0]}!',
                     backgroundColor: Colors.green,
                     colorText: Colors.white,
                     snackPosition: SnackPosition.BOTTOM,
@@ -237,9 +242,25 @@ class _LoginPageState extends State<LoginPage> {
       spacing: 8,
       children: [
         TextField(
+          controller: nameController,
+          onChanged: (a) {
+            enableButton.value = emailController.text.isNotEmpty &&
+                passwordController.text.isNotEmpty && nameController.text.isNotEmpty;
+          },
+          decoration: InputDecoration(
+            hintText: 'Name',
+            prefixIcon: const Icon(Icons.person_outline),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: Colors.grey),
+            ),
+          ),
+        ),
+        TextField(
           controller: emailController,
           onChanged: (a) {
-            enableButton.value = emailController.text.isNotEmpty && passwordController.text.isNotEmpty;
+            enableButton.value = emailController.text.isNotEmpty &&
+                passwordController.text.isNotEmpty && nameController.text.isNotEmpty;
           },
           decoration: InputDecoration(
             hintText: 'Email',
@@ -254,7 +275,8 @@ class _LoginPageState extends State<LoginPage> {
           controller: passwordController,
           obscureText: viewPass.value,
           onChanged: (a) {
-            enableButton.value = emailController.text.isNotEmpty && passwordController.text.isNotEmpty;
+            enableButton.value = emailController.text.isNotEmpty &&
+                passwordController.text.isNotEmpty && nameController.text.isNotEmpty;
           },
           decoration: InputDecoration(
             suffixIcon: IconButton(
@@ -279,18 +301,39 @@ class _LoginPageState extends State<LoginPage> {
             child: ElevatedButton(
               onPressed: (enableButton.value && !isLoading.value) ? () async {
                 isLoading.value = true;
-                final result = await authService.register(emailController.text, passwordController.text);
-                isLoading.value = false;
-                if (result) {
-                  Get.snackbar('Result', 'Registration Successful! Please log in.');
-                  isSelected.value = 'sign in';
-                } else {
+                try {
+                  final result = await authService.register(
+                      emailController.text,
+                      passwordController.text,
+                      nameController.text
+                  );
+                  if (result) {
+                    Get.snackbar(
+                        'Registration Successful',
+                        'You can now sign in with your credentials',
+                        backgroundColor: Colors.green,
+                        colorText: Colors.white
+                    );
+                  } else {
+                    Get.snackbar(
+                        'Registration Failed',
+                        'Please try again later',
+                        backgroundColor: Colors.red,
+                        colorText: Colors.white
+                    );
+                  }
+                } on Exception catch (e) {
+                  // TODO
                   Get.snackbar(
-                      'Result',
                       'Error in registration',
+                      e.toString(),
                       backgroundColor: Colors.red,
                       colorText: Colors.white
                   );
+                  print(e);
+                } finally {
+                  isLoading.value = false;
+                  isSelected.value = 'sign in';
                 }
               } : null,
               style: ElevatedButton.styleFrom(
