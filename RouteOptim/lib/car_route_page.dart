@@ -5,6 +5,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:route_optim/add_vehicle_page.dart';
 import 'package:route_optim/vehicle.dart';
+import 'package:route_optim/vehicle_service.dart';
 
 import 'map_page.dart';
 
@@ -24,27 +25,7 @@ class _CarRoutePageState extends State<CarRoutePage> {
 
   final selectedVehicle = Rxn<Vehicle>(null);
 
-  final vehicles = <Vehicle>[
-    const Vehicle(
-      name: 'Toyota Corolla',
-      consumption: 6.75,
-      fuelType: 'Petrol',
-    ),
-    const Vehicle(name: 'Honda Civic', consumption: 8.5, fuelType: 'Diesel'),
-    const Vehicle(name: 'Ford Focus', consumption: 5.0, fuelType: 'Hybrid'),
-    const Vehicle(
-      name: 'Chevrolet Malibu',
-      consumption: 11.75,
-      fuelType: 'Petrol',
-    ),
-    const Vehicle(
-      name: 'Nissan Altima',
-      consumption: 10.25,
-      fuelType: 'Diesel',
-    ),
-    const Vehicle(name: 'BMW 3 Series', consumption: 13.5, fuelType: 'Petrol'),
-    const Vehicle(name: 'Audi A4', consumption: 11.5, fuelType: 'Diesel'),
-  ].obs;
+  final vehicles = <Vehicle>[].obs;
 
   final locationsAndDistance = <String>[].obs;
 
@@ -53,20 +34,14 @@ class _CarRoutePageState extends State<CarRoutePage> {
 
   var distance = 0.0;
 
-  var startFilled = false.obs;
-  var destFilled = false.obs;
-  var waypointsFilled = false.obs;
-  var vehiclesSelected = false.obs;
+  final startFilled = false.obs;
+  final destFilled = false.obs;
+  final waypointsFilled = false.obs;
+  final vehiclesSelected = false.obs;
+  final vehiclesLoading = false.obs;
+  final vehiclesFound = false.obs;
 
-  // bool allInputsFilled() {
-  //   bool startFilled = startController.value.text.trim().isNotEmpty;
-  //   bool destFilled = destinationController.value.text.trim().isNotEmpty;
-  //   if(waypoints.isEmpty){
-  //     return startFilled && destFilled;
-  //   }
-  //   bool waypointsFilled = waypoints.every((c) => c.text.trim().isNotEmpty);
-  //   return startFilled && destFilled && waypointsFilled;
-  // }
+  final vehicleService = VehicleService();
 
   @override
   void dispose() {
@@ -78,6 +53,28 @@ class _CarRoutePageState extends State<CarRoutePage> {
       controller.dispose();
     }
     super.dispose();
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    loadVehicles();
+  }
+
+  Future<void> loadVehicles() async {
+    vehiclesLoading.value = true;
+    try {
+      final response = await vehicleService.loadAllVehicles();
+      vehicles.clear();
+      vehicles.value = response;
+      vehiclesFound.value = response.isNotEmpty;
+    } catch (e) {
+      print('Error loading vehicles: $e');
+      vehiclesFound.value = false;
+    } finally {
+      vehiclesLoading.value = false;
+    }
   }
 
   @override
@@ -319,15 +316,25 @@ class _CarRoutePageState extends State<CarRoutePage> {
                                 children: [
                                   const Text('Choose Vehicle'),
                                   Expanded(
-                                    child: ListView.builder(
-                                      shrinkWrap: true,
-                                      itemCount: vehicles.length,
-                                      itemBuilder: (ctx, index) {
-                                        return buildVehicleCard(
-                                          vehicles[index],
+                                    child: Obx(() {
+                                      if (vehiclesLoading.value) {
+                                        return const Center(
+                                          child: CircularProgressIndicator(),
                                         );
-                                      },
-                                    ),
+                                      } else if (vehicles.isEmpty) {
+                                        return const Center(
+                                          child: Text('No vehicles found. Please add a vehicle.'),
+                                        );
+                                      } else {
+                                        return ListView.builder(
+                                          shrinkWrap: true,
+                                          itemCount: vehicles.length,
+                                          itemBuilder: (ctx, index) {
+                                            return buildVehicleCard(vehicles[index]);
+                                          },
+                                        );
+                                      }
+                                    }),
                                   ),
                                   ElevatedButton.icon(
                                     onPressed: () {
@@ -336,20 +343,12 @@ class _CarRoutePageState extends State<CarRoutePage> {
                                     label: const Text('Add New Vehicle'),
                                     icon: const Icon(Icons.add),
                                   ),
-                                  // **********************************************************************************************************
                                 ],
                               ),
                             ),
                           ),
                         ),
-                        // ElevatedButton(
-                        //   onPressed: allInputsFilled() && selectedVehicle.value != null ? () {
-                        //     // TODO: Calculate best route
-                        //     print("Calculating best route...");
-                        //     // navigateToMapPage();
-                        //   } : null,
-                        //   child: const Text("Calculate Best Route"),
-                        // ),
+
                         Obx(() {
                           return ElevatedButton(
                             onPressed:
@@ -467,7 +466,7 @@ class _CarRoutePageState extends State<CarRoutePage> {
             color: isSelected ? Colors.blueAccent : Colors.black,
           ),
           title: Text(
-            vehicle.name,
+            vehicle.manufacture,
             style: TextStyle(
               fontWeight: FontWeight.bold,
               color: isSelected ? Colors.blueAccent : Colors.black,

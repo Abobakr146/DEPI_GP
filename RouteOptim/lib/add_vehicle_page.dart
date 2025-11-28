@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:route_optim/vehicle.dart';
 
 class AddVehiclePage extends StatefulWidget {
   const AddVehiclePage({super.key});
@@ -158,8 +159,17 @@ class _AddVehiclePageState extends State<AddVehiclePage> {
                   ElevatedButton(
                       onPressed: (){
                         // TODO: Save vehicle logic and clear fields
+                        print('Vehicle Name: ${vehicleNameController.text}');
+                        print('Consumption: $consumption L/100km');
+                        print('Fuel Type: $fuelType');
+                        final vehicle = Vehicle(
+                            manufacture: vehicleNameController.text,
+                            consumption: consumption,
+                            fuelType: fuelType
+                        );
+
                       },
-                      child: Text('Save Vehicle')
+                      child: const Text('Save Vehicle')
                   ),
                 ],
               ),
