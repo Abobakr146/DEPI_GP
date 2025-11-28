@@ -396,16 +396,43 @@ class _SearchField extends StatelessWidget {
               Expanded(
                 child: TextField(
                   controller: controller,
-                  onChanged: (value) =>
-                      mapController.onSearchChanged(value, index),
-                  onTap: () {
+                  onChanged: (value) {
+                    mapController.onSearchChanged(value, index);
+                    // Show suggestions when typing
                     if (index == -1) {
                       mapController.showCurrentSuggestions.value = true;
                     } else if (index == -2) {
                       mapController.showDestSuggestions.value = true;
                     } else {
-                      mapController.showWaypointSuggestions[index] = true;
-                      mapController.showWaypointSuggestions.refresh();
+                      if (index <
+                          mapController.showWaypointSuggestions.length) {
+                        mapController.showWaypointSuggestions[index] = true;
+                        mapController.showWaypointSuggestions.refresh();
+                      }
+                    }
+                  },
+                  onTap: () {
+                    // Show suggestions when tapping the field
+                    if (index == -1) {
+                      mapController.showCurrentSuggestions.value = true;
+                      // Trigger search if there's already text
+                      if (controller.text.isNotEmpty) {
+                        mapController.searchLocation(controller.text, index);
+                      }
+                    } else if (index == -2) {
+                      mapController.showDestSuggestions.value = true;
+                      if (controller.text.isNotEmpty) {
+                        mapController.searchLocation(controller.text, index);
+                      }
+                    } else {
+                      if (index <
+                          mapController.showWaypointSuggestions.length) {
+                        mapController.showWaypointSuggestions[index] = true;
+                        mapController.showWaypointSuggestions.refresh();
+                        if (controller.text.isNotEmpty) {
+                          mapController.searchLocation(controller.text, index);
+                        }
+                      }
                     }
                   },
                   decoration: InputDecoration(
@@ -437,7 +464,22 @@ class _SearchField extends StatelessWidget {
                         size: 18,
                         color: Colors.grey.shade400,
                       ),
-                      onPressed: () => mapController.clearLocation(index),
+                      onPressed: () {
+                        mapController.clearLocation(index);
+                        // Hide suggestions when clearing
+                        if (index == -1) {
+                          mapController.showCurrentSuggestions.value = false;
+                        } else if (index == -2) {
+                          mapController.showDestSuggestions.value = false;
+                        } else {
+                          if (index <
+                              mapController.showWaypointSuggestions.length) {
+                            mapController.showWaypointSuggestions[index] =
+                                false;
+                            mapController.showWaypointSuggestions.refresh();
+                          }
+                        }
+                      },
                     );
                   }
                   return const SizedBox.shrink();
@@ -499,8 +541,21 @@ class _SearchField extends StatelessWidget {
                 itemBuilder: (context, idx) {
                   final suggestion = suggestions[idx];
                   return InkWell(
-                    onTap: () =>
-                        mapController.selectLocation(suggestion, index),
+                    onTap: () {
+                      mapController.selectLocation(suggestion, index);
+                      // Hide suggestions after selection
+                      if (index == -1) {
+                        mapController.showCurrentSuggestions.value = false;
+                      } else if (index == -2) {
+                        mapController.showDestSuggestions.value = false;
+                      } else {
+                        if (index <
+                            mapController.showWaypointSuggestions.length) {
+                          mapController.showWaypointSuggestions[index] = false;
+                          mapController.showWaypointSuggestions.refresh();
+                        }
+                      }
+                    },
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 16,
