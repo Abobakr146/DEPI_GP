@@ -56,7 +56,7 @@ class _LoginPageState extends State<LoginPage> {
                   //   child: Image.asset('assets/images/information.png'),
                   // ),
                   // const SizedBox(height: 20,),
-                  const Text('Help Desk Portal', style: TextStyle(fontSize: 20,
+                  const Text('RouteOptim', style: TextStyle(fontSize: 20,
                       fontWeight: FontWeight.bold,
                       color: Colors.black)),
                   const Text('Sign in to access portal'),
