@@ -4,9 +4,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:get/get.dart';
 import 'map_directions_controller.dart';
-
-const String MAPBOX_ACCESS_TOKEN =
-    'pk.eyJ1IjoiaGlzaGFtaGF0ZW0iLCJhIjoiY21pYm82ZzJqMHVvbTJsczQwZnBwd20zOSJ9.S39J9fY023DATGzHegv1GA';
+import 'map_service.dart';
 
 class MapDirectionsPage extends StatelessWidget {
   const MapDirectionsPage({Key? key}) : super(key: key);
@@ -101,49 +99,41 @@ class MapDirectionsPage extends StatelessWidget {
                     ),
                     Obx(() {
                       if (controller.distance.value != null) {
-                        return Column(
-                          children: [
-                            const SizedBox(height: 12),
-                            Container(
-                              padding: const EdgeInsets.all(16),
-                              decoration: BoxDecoration(
-                                color: Colors.blue.shade50,
-                                border: Border.all(color: Colors.blue.shade200),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Row(
+                        return Container(
+                          margin: const EdgeInsets.only(top: 12),
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: Colors.blue.shade50,
+                            border: Border.all(color: Colors.blue.shade200),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(Icons.route, color: Colors.blue.shade700),
+                              const SizedBox(width: 12),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Icon(
-                                    Icons.route,
-                                    color: Colors.blue.shade700,
+                                  Text(
+                                    'Total Distance',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey.shade600,
+                                    ),
                                   ),
-                                  const SizedBox(width: 12),
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Total Distance',
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          color: Colors.grey.shade600,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 4),
-                                      Text(
-                                        '${controller.distance.value} km',
-                                        style: const TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.blue,
-                                        ),
-                                      ),
-                                    ],
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    '${controller.distance.value} km',
+                                    style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.blue,
+                                    ),
                                   ),
                                 ],
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         );
                       }
                       return const SizedBox.shrink();
@@ -156,174 +146,52 @@ class MapDirectionsPage extends StatelessWidget {
           Expanded(
             child: Stack(
               children: [
-                FlutterMap(
-                  mapController: controller.mapController,
-                  options: MapOptions(
-                    initialCenter: const LatLng(30.0444, 31.2357),
-                    initialZoom: 12,
-                    onTap: controller.onMapTap,
-                  ),
-                  children: [
-                    TileLayer(
-                      urlTemplate:
-                          'https://api.mapbox.com/styles/v1/mapbox/streets-v12/tiles/{z}/{x}/{y}?access_token={accessToken}',
-                      additionalOptions: const {
-                        'accessToken': MAPBOX_ACCESS_TOKEN,
-                      },
-                      userAgentPackageName: 'com.example.map_directions_app',
-                      tileProvider: NetworkTileProvider(),
+                RepaintBoundary(
+                  child: FlutterMap(
+                    mapController: controller.mapController,
+                    options: MapOptions(
+                      initialCenter: const LatLng(30.0444, 31.2357),
+                      initialZoom: 12,
+                      onTap: controller.onMapTap,
                     ),
-                    RichAttributionWidget(
-                      attributions: [
-                        TextSourceAttribution('© Mapbox', onTap: () {}),
-                        TextSourceAttribution('© OpenStreetMap', onTap: () {}),
-                      ],
-                      alignment: AttributionAlignment.bottomRight,
-                    ),
-                    Obx(() {
-                      if (controller.routePoints.isNotEmpty) {
-                        return PolylineLayer(
-                          polylines: [
-                            Polyline(
-                              points: controller.routePoints,
-                              color: Colors.blue,
-                              strokeWidth: 5,
-                            ),
-                          ],
-                        );
-                      }
-                      return const SizedBox.shrink();
-                    }),
-                    Obx(
-                      () => MarkerLayer(
-                        markers: [
-                          if (controller.selectedStart.value != null)
-                            Marker(
-                              point: LatLng(
-                                controller.selectedStart.value!.lat,
-                                controller.selectedStart.value!.lon,
-                              ),
-                              width: 40,
-                              height: 40,
-                              child: _buildMarker('S', Colors.green),
-                            ),
-                          for (
-                            int i = 0;
-                            i < controller.selectedWaypoints.length;
-                            i++
-                          )
-                            if (controller.selectedWaypoints[i] != null)
-                              Marker(
-                                point: LatLng(
-                                  controller.selectedWaypoints[i]!.lat,
-                                  controller.selectedWaypoints[i]!.lon,
-                                ),
-                                width: 40,
-                                height: 40,
-                                child: _buildMarker('${i + 1}', Colors.orange),
-                              ),
-                          if (controller.selectedEnd.value != null)
-                            Marker(
-                              point: LatLng(
-                                controller.selectedEnd.value!.lat,
-                                controller.selectedEnd.value!.lon,
-                              ),
-                              width: 40,
-                              height: 40,
-                              child: _buildMarker('D', Colors.red),
-                            ),
+                    children: [
+                      TileLayer(
+                        urlTemplate:
+                            'https://api.mapbox.com/styles/v1/mapbox/streets-v12/tiles/{z}/{x}/{y}?access_token={accessToken}',
+                        additionalOptions: const {
+                          'accessToken': MAPBOX_ACCESS_TOKEN,
+                        },
+                        userAgentPackageName: 'com.example.map_directions_app',
+                        tileProvider: NetworkTileProvider(),
+                      ),
+                      const RichAttributionWidget(
+                        attributions: [
+                          TextSourceAttribution('© Mapbox'),
+                          TextSourceAttribution('© OpenStreetMap'),
                         ],
+                        alignment: AttributionAlignment.bottomRight,
                       ),
-                    ),
-                  ],
+                      Obx(
+                        () => controller.routePoints.isEmpty
+                            ? const SizedBox.shrink()
+                            : PolylineLayer(
+                                polylines: [
+                                  Polyline(
+                                    points: controller.routePoints,
+                                    color: Colors.blue,
+                                    strokeWidth: 5,
+                                  ),
+                                ],
+                              ),
+                      ),
+                      Obx(
+                        () => MarkerLayer(markers: _buildMarkers(controller)),
+                      ),
+                    ],
+                  ),
                 ),
-                Obx(() {
-                  if (controller.isSelectingFromMap.value) {
-                    return Positioned(
-                      top: 16,
-                      left: 0,
-                      right: 0,
-                      child: Center(
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 12,
-                          ),
-                          decoration: BoxDecoration(
-                            color: controller.selectingIndex.value == -1
-                                ? Colors.green
-                                : controller.selectingIndex.value == -2
-                                ? Colors.red
-                                : Colors.orange,
-                            borderRadius: BorderRadius.circular(25),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.2),
-                                blurRadius: 8,
-                              ),
-                            ],
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: const [
-                              Icon(
-                                Icons.touch_app,
-                                color: Colors.white,
-                                size: 20,
-                              ),
-                              SizedBox(width: 8),
-                              Text(
-                                'Tap on map to select location',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    );
-                  }
-                  return const SizedBox.shrink();
-                }),
-                Obx(() {
-                  if (controller.selectedStart.value == null &&
-                      controller.selectedEnd.value == null &&
-                      !controller.isSelectingFromMap.value) {
-                    return Positioned(
-                      bottom: 16,
-                      left: 0,
-                      right: 0,
-                      child: Center(
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 8,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(8),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.1),
-                                blurRadius: 8,
-                              ),
-                            ],
-                          ),
-                          child: Text(
-                            'Enter locations to see route',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.grey.shade600,
-                            ),
-                          ),
-                        ),
-                      ),
-                    );
-                  }
-                  return const SizedBox.shrink();
-                }),
+                _MapSelectionIndicator(controller: controller),
+                _EmptyStateIndicator(controller: controller),
               ],
             ),
           ),
@@ -332,27 +200,55 @@ class MapDirectionsPage extends StatelessWidget {
     );
   }
 
-  Widget _buildMarker(String label, Color color) {
-    return Container(
-      decoration: BoxDecoration(
-        color: color,
-        shape: BoxShape.circle,
-        border: Border.all(color: Colors.white, width: 3),
-        boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.3), blurRadius: 6),
-        ],
-      ),
-      child: Center(
-        child: Text(
-          label,
-          style: const TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-            fontSize: 16,
+  static List<Marker> _buildMarkers(MapDirectionsController controller) {
+    final markers = <Marker>[];
+
+    // Start marker
+    if (controller.selectedStart.value != null) {
+      markers.add(
+        Marker(
+          point: LatLng(
+            controller.selectedStart.value!.lat,
+            controller.selectedStart.value!.lon,
           ),
+          width: 40,
+          height: 40,
+          child: const _MarkerWidget(label: 'S', color: Colors.green),
         ),
-      ),
-    );
+      );
+    }
+
+    // Waypoint markers
+    for (int i = 0; i < controller.selectedWaypoints.length; i++) {
+      final waypoint = controller.selectedWaypoints[i];
+      if (waypoint != null) {
+        markers.add(
+          Marker(
+            point: LatLng(waypoint.lat, waypoint.lon),
+            width: 40,
+            height: 40,
+            child: _MarkerWidget(label: '${i + 1}', color: Colors.orange),
+          ),
+        );
+      }
+    }
+
+    // End marker
+    if (controller.selectedEnd.value != null) {
+      markers.add(
+        Marker(
+          point: LatLng(
+            controller.selectedEnd.value!.lat,
+            controller.selectedEnd.value!.lon,
+          ),
+          width: 40,
+          height: 40,
+          child: const _MarkerWidget(label: 'D', color: Colors.red),
+        ),
+      );
+    }
+
+    return markers;
   }
 }
 
@@ -607,5 +503,133 @@ class _SearchField extends StatelessWidget {
         }),
       ],
     );
+  }
+}
+
+// Cached marker widget with const constructor
+class _MarkerWidget extends StatelessWidget {
+  final String label;
+  final Color color;
+
+  const _MarkerWidget({required this.label, required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: color,
+        shape: BoxShape.circle,
+        border: Border.all(color: Colors.white, width: 3),
+        boxShadow: const [BoxShadow(color: Colors.black26, blurRadius: 6)],
+      ),
+      child: Center(
+        child: Text(
+          label,
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// Map selection indicator widget
+class _MapSelectionIndicator extends StatelessWidget {
+  final MapDirectionsController controller;
+
+  const _MapSelectionIndicator({required this.controller});
+
+  @override
+  Widget build(BuildContext context) {
+    return Obx(() {
+      if (!controller.isSelectingFromMap.value) {
+        return const SizedBox.shrink();
+      }
+
+      final color = controller.selectingIndex.value == -1
+          ? Colors.green
+          : controller.selectingIndex.value == -2
+          ? Colors.red
+          : Colors.orange;
+
+      return Positioned(
+        top: 16,
+        left: 0,
+        right: 0,
+        child: Center(
+          child: RepaintBoundary(
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              decoration: BoxDecoration(
+                color: color,
+                borderRadius: BorderRadius.circular(25),
+                boxShadow: const [
+                  BoxShadow(color: Colors.black26, blurRadius: 8),
+                ],
+              ),
+              child: const Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.touch_app, color: Colors.white, size: 20),
+                  SizedBox(width: 8),
+                  Text(
+                    'Tap on map to select location',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    });
+  }
+}
+
+// Empty state indicator widget
+class _EmptyStateIndicator extends StatelessWidget {
+  final MapDirectionsController controller;
+
+  const _EmptyStateIndicator({required this.controller});
+
+  @override
+  Widget build(BuildContext context) {
+    return Obx(() {
+      if (controller.selectedStart.value != null ||
+          controller.selectedEnd.value != null ||
+          controller.isSelectingFromMap.value) {
+        return const SizedBox.shrink();
+      }
+
+      return Positioned(
+        bottom: 16,
+        left: 0,
+        right: 0,
+        child: Center(
+          child: RepaintBoundary(
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(8),
+                boxShadow: const [
+                  BoxShadow(color: Colors.black12, blurRadius: 8),
+                ],
+              ),
+              child: Text(
+                'Enter locations to see route',
+                style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+              ),
+            ),
+          ),
+        ),
+      );
+    });
   }
 }
