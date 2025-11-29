@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:route_optim/trips.dart';
 
+import 'home_page.dart';
+
 class TripHistoryPage extends StatefulWidget {
   const TripHistoryPage({super.key});
 
@@ -10,41 +12,6 @@ class TripHistoryPage extends StatefulWidget {
 }
 
 class _TripHistoryPageState extends State<TripHistoryPage> {
-  final tripHistoryList = <Trip>[
-    Trip(
-        tripName: 'Downtown to Airport',
-        timestamp: DateTime(2024, 11, 25),
-        distance: 24.5,
-        fuelUsed: 2.1,
-        cost: 3.85,
-        fuelSaved: 0.3,
-        moneySaved: 1.50,
-        vehicleId: 1,
-        isFavorite: true,
-        wayPoints: ['Downtown Plaza', 'International Airport']),
-    Trip(
-        tripName: 'Weekend Roadtrip',
-        timestamp: DateTime.now().subtract(const Duration(days: 3)),
-        distance: 120.0,
-        fuelUsed: 9.5,
-        cost: 45.0,
-        fuelSaved: 2.0,
-        moneySaved: 10.0,
-        vehicleId: 1,
-        isFavorite: true,
-        wayPoints: ['City A', 'Scenic Viewpoint', 'City B']),
-    Trip(
-        tripName: 'Grocery Run',
-        timestamp: DateTime.now().subtract(const Duration(hours: 5)),
-        distance: 5.2,
-        fuelUsed: 0.5,
-        cost: 2.25,
-        fuelSaved: 0.1,
-        moneySaved: 0.5,
-        vehicleId: 2,
-        isFavorite: false,
-        wayPoints: ['Home', 'Supermarket', 'Home']),
-  ].obs;
 
   // @override
   // void initState() {
@@ -123,10 +90,10 @@ class _TripHistoryPageState extends State<TripHistoryPage> {
       body: Obx(
             () => ListView.separated(
           padding: const EdgeInsets.all(8.0),
-          itemCount: tripHistoryList.length,
+          itemCount: trips.length,
           separatorBuilder: (context, index) => const SizedBox(height: 8),
           itemBuilder: (context, index) {
-            final trip = tripHistoryList[index];
+            final trip = trips[index];
             final isFav = trip.isFavorite.obs;
             return Card(
               margin: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -179,7 +146,7 @@ class _TripHistoryPageState extends State<TripHistoryPage> {
                                 padding: EdgeInsets.zero,
                                 icon: const Icon(Icons.delete, color: Colors.red, size: 20),
                                 onPressed: () {
-                                  tripHistoryList.removeAt(index);
+                                  trips.removeAt(index);
                                 },
                               ),
                             ),

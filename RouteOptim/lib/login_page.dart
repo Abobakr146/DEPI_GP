@@ -51,11 +51,10 @@ class _LoginPageState extends State<LoginPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // SizedBox(
-                  //   height: 50,
-                  //   child: Image.asset('assets/images/information.png'),
-                  // ),
-                  // const SizedBox(height: 20,),
+                  SizedBox(
+                    height: 50,
+                    child: Image.asset('assets/images/logo.png'),
+                  ),
                   const Text('RouteOptim', style: TextStyle(fontSize: 20,
                       fontWeight: FontWeight.bold,
                       color: Colors.black)),
@@ -188,7 +187,6 @@ class _LoginPageState extends State<LoginPage> {
                     'Incorrect credentials',
                     backgroundColor: Colors.red,
                     colorText: Colors.white,
-                    snackPosition: SnackPosition.BOTTOM,
                   );
                 }
               } : null,
@@ -211,7 +209,7 @@ class _LoginPageState extends State<LoginPage> {
                   Text('Sign In', style: TextStyle(
                       fontSize: 16, color: Colors.white)),
                 ],
-              ) : const CircularProgressIndicator(color: Colors.white,),
+              ) : const CircularProgressIndicator(),
             ),
           );
         }),

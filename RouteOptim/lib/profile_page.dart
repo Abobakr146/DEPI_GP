@@ -1,24 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class ProfilePage extends StatelessWidget {
-  // Reactive variables
-  final RxString userName = "John Doe".obs;
-  final RxString userEmail = "john.doe@email.com".obs;
-  final RxInt trips = 127.obs;
-  final RxString distance = "2,450 km".obs;
-  final RxString saved = "\$156".obs;
-  final RxList<Map<String, dynamic>> vehicles = <Map<String, dynamic>>[].obs;
+import 'home_page.dart';
+import 'login_page.dart';
+import 'main.dart';
 
-  ProfilePage({Key? key}) : super(key: key) {
-    // Example vehicle
-    vehicles.add({
-      'model': "2022 Honda Accord (Sedan)",
-      'active': true,
-      'mpg': "32 MPG",
-      'fuel': "Gasoline",
-    });
-  }
+class ProfilePage extends StatelessWidget {
+  ProfilePage({super.key});
+  // final RxString userName = "John Doe".obs;
+  // final RxString userEmail = "john.doe@email.com".obs;
+  // final RxInt trips = 127.obs;
+  // final RxString distance = "2,450 km".obs;
+  // final RxString saved = "\$156".obs;
+  // final RxList<Map<String, dynamic>> vehicles = <Map<String, dynamic>>[].obs;
+  final name = user!.name.obs;
+  final email = user!.email.obs;
 
   @override
   Widget build(BuildContext context) {
@@ -40,6 +36,7 @@ class ProfilePage extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
           child: Column(
+            spacing: 8,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Profile Card
@@ -65,7 +62,7 @@ class ProfilePage extends StatelessWidget {
                           children: [
                             Obx(
                               () => Text(
-                                userName.value,
+                                name.value,
                                 style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 18,
@@ -74,7 +71,7 @@ class ProfilePage extends StatelessWidget {
                             ),
                             Obx(
                               () => Text(
-                                userEmail.value,
+                                email.value,
                                 style: const TextStyle(color: Colors.blueGrey),
                               ),
                             ),
@@ -85,7 +82,7 @@ class ProfilePage extends StatelessWidget {
                                 Flexible(
                                   child: Obx(
                                     () => Text(
-                                      "Trips\n${trips.value}",
+                                      "Trips\n${trips.length}",
                                       style: const TextStyle(fontSize: 14),
                                       textAlign: TextAlign.center,
                                     ),
@@ -94,7 +91,7 @@ class ProfilePage extends StatelessWidget {
                                 Flexible(
                                   child: Obx(
                                     () => Text(
-                                      "Distance\n${distance.value}",
+                                      "Distance\n${totalDistance.value}",
                                       style: const TextStyle(fontSize: 14),
                                       textAlign: TextAlign.center,
                                     ),
@@ -103,7 +100,7 @@ class ProfilePage extends StatelessWidget {
                                 Flexible(
                                   child: Obx(
                                     () => Text(
-                                      "Saved\n${saved.value}",
+                                      "Saved\n${totalMoneySaved.value}",
                                       style: const TextStyle(fontSize: 14),
                                       textAlign: TextAlign.center,
                                     ),
@@ -131,7 +128,6 @@ class ProfilePage extends StatelessWidget {
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               // Preferences Cards
-              const SizedBox(height: 12),
               Card(
                 child: ListTile(
                   leading: const Icon(
@@ -157,16 +153,6 @@ class ProfilePage extends StatelessWidget {
               ),
               Card(
                 child: ListTile(
-                  leading: const Icon(Icons.credit_card, color: Colors.purple),
-                  title: const Text("Payment Methods"),
-                  subtitle: const Text("Cards and payment options"),
-                  onTap: () {
-                    // TODO: Handle payment methods logic
-                  },
-                ),
-              ),
-              Card(
-                child: ListTile(
                   leading: const Icon(Icons.help, color: Colors.deepPurple),
                   title: const Text("Help & Support"),
                   subtitle: const Text("Contact us at support@gmail.com"),
@@ -175,118 +161,6 @@ class ProfilePage extends StatelessWidget {
                   },
                 ),
               ),
-              const SizedBox(height: 18),
-              // My Vehicles
-              const Text(
-                "My Vehicles",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              Obx(
-                () => Column(
-                  children: List.generate(vehicles.length, (index) {
-                    final vehicle = vehicles[index];
-                    return Container(
-                      margin: const EdgeInsets.symmetric(vertical: 6),
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: vehicle['active']
-                              ? Colors.blueAccent
-                              : Colors.grey.shade300,
-                          width: 2.0,
-                        ),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: ListTile(
-                        title: Text(
-                          vehicle['active'] ? "Primary Vehicle" : "Vehicle",
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        trailing: vehicle['active']
-                            ? Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 4,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: Colors.blue.shade100,
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                child: const Text(
-                                  "Active",
-                                  style: TextStyle(
-                                    color: Colors.blueAccent,
-                                    fontSize: 12,
-                                  ),
-                                ),
-                              )
-                            : null,
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(vehicle['model']),
-                            const SizedBox(height: 6),
-                            Row(
-                              children: [
-                                Flexible(
-                                  child: Text(
-                                    "Avg. MPG ${vehicle['mpg']}",
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                                const SizedBox(width: 16),
-                                Flexible(
-                                  child: Text(
-                                    "Fuel Type ${vehicle['fuel']}",
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  }),
-                ),
-              ),
-              // Add Vehicle Card
-              Card(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  side: BorderSide(
-                    color: Colors.grey.shade300,
-                    style: BorderStyle.solid,
-                  ),
-                ),
-                child: ListTile(
-                  title: const Center(
-                    child: Text(
-                      "+ Add Another Vehicle",
-                      style: TextStyle(color: Colors.blue),
-                    ),
-                  ),
-                  onTap: () {
-                    // TODO: Handle add vehicle logic
-                  },
-                ),
-              ),
-              const SizedBox(height: 14),
-              // App Version & Terms
-              const Card(
-                child: ListTile(
-                  title: Text("App Version"),
-                  trailing: Text("2.4.1"),
-                ),
-              ),
-              Card(
-                child: ListTile(
-                  title: const Text("Terms & Conditions"),
-                  onTap: () {
-                    // TODO: Terms/conditions logic
-                  },
-                ),
-              ),
-              const SizedBox(height: 18),
               // Log Out Button
               Center(
                 child: Padding(
@@ -294,6 +168,14 @@ class ProfilePage extends StatelessWidget {
                   child: OutlinedButton.icon(
                     onPressed: () {
                       // TODO: Log out logic
+                      authService.logout();
+                      Get.offAll(() => LoginPage());
+                      Get.snackbar(
+                        'Bye!',
+                        'Come Back Again!',
+                        backgroundColor: Colors.green.withValues(alpha: 0.1),
+                        colorText: Colors.green[800],
+                      );
                     },
                     icon: const Icon(Icons.logout, color: Colors.red),
                     label: const Text(

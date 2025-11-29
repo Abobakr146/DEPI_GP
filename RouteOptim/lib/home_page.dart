@@ -3,14 +3,73 @@ import 'package:get/get.dart';
 import 'package:route_optim/car_route_page.dart';
 import 'package:route_optim/profile_page.dart';
 import 'package:route_optim/trip_history_page.dart';
+import 'package:route_optim/trip_service.dart';
 import 'package:route_optim/trips.dart';
 
-class HomePage extends StatelessWidget {
+import 'login_page.dart';
+
+final trips = <Trip>[
+  Trip(
+      tripName: 'Downtown to Airport',
+      timestamp: DateTime(2024, 11, 25),
+      distance: 24.5,
+      fuelUsed: 2.1,
+      cost: 3.85,
+      fuelSaved: 0.3,
+      moneySaved: 1.50,
+      vehicleId: 1,
+      isFavorite: true,
+      wayPoints: ['Downtown Plaza', 'International Airport']),
+  Trip(
+      tripName: 'Weekend Roadtrip',
+      timestamp: DateTime.now().subtract(const Duration(days: 3)),
+      distance: 120.0,
+      fuelUsed: 9.5,
+      cost: 45.0,
+      fuelSaved: 2.0,
+      moneySaved: 10.0,
+      vehicleId: 1,
+      isFavorite: true,
+      wayPoints: ['City A', 'Scenic Viewpoint', 'City B']),
+  Trip(
+      tripName: 'Grocery Run',
+      timestamp: DateTime.now().subtract(const Duration(hours: 5)),
+      distance: 5.2,
+      fuelUsed: 0.5,
+      cost: 2.25,
+      fuelSaved: 0.1,
+      moneySaved: 0.5,
+      vehicleId: 2,
+      isFavorite: false,
+      wayPoints: ['Home', 'Supermarket', 'Home']),
+].obs;
+
+final tripService = TripService();
+final totalDistance = 0.0.obs;
+final totalFuelSaved = 0.0.obs;
+final totalMoneySaved = 0.0.obs;
+
+class HomePage extends StatefulWidget {
   HomePage({super.key});
 
-  final trips = <Trip>[].obs;
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
 
+class _HomePageState extends State<HomePage> {
  // ......... load all trips from database .........
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    loadTrips();
+  }
+
+  Future<void> loadTrips() async {
+    await tripService.getTripsByID(user!.id);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,6 +95,7 @@ class HomePage extends StatelessWidget {
               spacing: 8,
               children: [
                 Card(
+                  margin: const EdgeInsets.symmetric(vertical: 10),
                   color: const Color(0xFF0F2CE8),
                   child: Column(
                     children: [
@@ -58,7 +118,7 @@ class HomePage extends StatelessWidget {
                       Obx(
                         () => trips.isNotEmpty
                             ? Text(
-                                trips.last.toString(),
+                                trips.last.tripName,
                                 style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 16,
@@ -76,35 +136,69 @@ class HomePage extends StatelessWidget {
                                 ),
                               ),
                       ),
+                      const SizedBox(height: 8),
                       Obx(
                         () => trips.isNotEmpty
-                            ? ListTile(
-                                // ......... display last trip's distance, fuel, and cost .........
-                                leading: Text(
-                                  'Distance: ${trips.last.distance} km',
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 14,
-                                    // fontWeight: FontWeight.bold,
+                            ?
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Expanded(
+                              child: Column(
+                                children: [
+                                  const Text(
+                                    'Distance',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                    ),
                                   ),
-                                ),
-                                title: Text(
-                                  'Fuel Used: ${trips.last.fuelUsed} L',
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 14,
-                                    // fontWeight: FontWeight.bold,
+                                  Text(
+                                    '${trips.last.distance} km',
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                    ),
                                   ),
-                                ),
-                                trailing: Text(
-                                  'Cost: \$${trips.last.cost}',
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 14,
-                                    // fontWeight: FontWeight.bold,
+                                ],
+                              ),
+                            ),
+                            Expanded(
+                              child: Column(
+                                children: [
+                                  const Text(
+                                    'Fuel Saved',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                    ),
                                   ),
-                                ),
-                              )
+                                  Text(
+                                    '${trips.last.fuelSaved} L',
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Expanded(
+                              child: Column(
+                                children: [
+                                  const Text(
+                                    'Money Saved',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  Text(
+                                    '\$${trips.last.moneySaved}',
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        )
                             : const SizedBox.shrink(),
                       ),
                     ],
@@ -130,7 +224,7 @@ class HomePage extends StatelessWidget {
                       subtitle: const Text('Optimize Fuel Consumption'),
                       trailing: const Icon(Icons.arrow_forward_ios),
                       onTap: () {
-                        Get.to(() => CarRoutePage());
+                        Get.to(() => const CarRoutePage());
                       },
                     ),
                   ),
@@ -157,19 +251,15 @@ class HomePage extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
                 const Text(
-                  'Your Stats This Month',
+                  'Your Stats',
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                GridView.count(
-                  childAspectRatio: 2,
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 15.0,
-                  mainAxisSpacing: 15.0,
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
                   children: [
                     buildStatCard('Total Trips'),
                     buildStatCard('Fuel Saved'),
@@ -186,27 +276,9 @@ class HomePage extends StatelessWidget {
   }
 
   Widget buildStatCard(String stat) {
-    var totalTrips = 0;
-    var savedFuel = 0;
-    var distance = 0;
-    var moneySaved = 0;
-
-    if (stat == 'Total Trips') {
-      totalTrips = trips.length;
-    } else if (stat == 'Fuel Saved') {
-      for (var trip in trips) {
-        // logic to get total fuel saved
-      }
-    } else if (stat == 'Distance Travelled') {
-      for (var trip in trips) {
-        // logic to get total distance
-      }
-    } else if (stat == 'Money Saved') {
-      for (var trip in trips) {
-        // logic to get total money saved
-      }
-    }
     return Card(
+      shadowColor: Colors.grey,
+      elevation: 4,
       color: Colors.white,
       child: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -217,13 +289,13 @@ class HomePage extends StatelessWidget {
             Text(stat),
             Text(
               stat == 'Total Trips'
-                  ? '$totalTrips'
+                  ? '${trips.length}'
                   : stat == 'Fuel Saved'
-                  ? '$savedFuel L'
+                  ? '${totalFuelSaved.value} L'
                   : stat == 'Distance Travelled'
-                  ? '$distance km'
+                  ? '${totalDistance.value} km'
                   : stat == 'Money Saved'
-                  ? '\$$moneySaved'
+                  ? '\$${totalMoneySaved.value}'
                   : '',
               style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
