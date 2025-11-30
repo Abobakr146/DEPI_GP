@@ -495,24 +495,24 @@ class _CarRoutePageState extends State<CarRoutePage> {
               Text(
                 '${vehicle.consumption} L/100km',
                 style: TextStyle(
-                  color: isSelected ? Colors.white : Colors.black,
+                  color: isSelected ? Colors.white : null,
                 ),
               ),
               Icon(
                 Icons.circle,
                 size: 6,
-                color: isSelected ? Colors.white : Colors.black,
+                color: isSelected ? Colors.white : null,
               ),
               Text(
                 vehicle.fuelType,
                 style: TextStyle(
-                  color: isSelected ? Colors.white : Colors.black,
+                  color: isSelected ? Colors.white : null,
                 ),
               ),
               Icon(
                 Icons.circle,
                 size: 6,
-                color: isSelected ? Colors.white : Colors.black,
+                color: isSelected ? Colors.white : null,
               ),
               // Emission label
               () {
