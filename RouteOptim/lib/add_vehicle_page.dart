@@ -45,7 +45,7 @@ class _AddVehiclePageState extends State<AddVehiclePage> {
             Text("Add New Vehicle"),
             Text(
               "Provide details about your vehicle",
-              style: TextStyle(fontSize: 12.0, color: Colors.black54),
+              style: TextStyle(fontSize: 12.0, color: Colors.grey),
             ),
           ],
         ),
@@ -98,15 +98,6 @@ class _AddVehiclePageState extends State<AddVehiclePage> {
                             maximumSize: WidgetStateProperty.all<Size>(
                               const Size(300, 400),
                             ),
-                            // backgroundColor: WidgetStateProperty.all<Color>(Colors.white10)
-                          ),
-                          inputDecorationTheme: InputDecorationTheme(
-                            filled: true,
-                            fillColor: const Color(0xFFF3F3F5),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: const BorderSide(color: Colors.grey),
-                            ),
                           ),
                           dropdownMenuEntries: const [
                             DropdownMenuEntry(value: 5, label: '500-1000 cc'),
@@ -149,15 +140,6 @@ class _AddVehiclePageState extends State<AddVehiclePage> {
                             maximumSize: WidgetStateProperty.all<Size>(
                               const Size(300, 400),
                             ),
-                            // backgroundColor: WidgetStateProperty.all<Color>(Colors.white10)
-                          ),
-                          inputDecorationTheme: InputDecorationTheme(
-                            filled: true,
-                            fillColor: const Color(0xFFF3F3F5),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: const BorderSide(color: Colors.grey),
-                            ),
                           ),
                           dropdownMenuEntries: const [
                             DropdownMenuEntry(
@@ -178,55 +160,55 @@ class _AddVehiclePageState extends State<AddVehiclePage> {
                   ),
                 ),
                 Obx(() {
-                  return ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        iconSize: double.infinity,
-                      ),
-                      onPressed: (!isLoading.value &&
-                          !vehicleNameEmpty.value &&
-                          consumption.value > 0 &&
-                          fuelType.value.isNotEmpty
-                      ) ? () async {
-                        // TODO: Save vehicle logic and clear fields
-                        isLoading.value = true;
-                        print('Vehicle Name: ${vehicleNameController.text}');
-                        print('Consumption: $consumption L/100km');
-                        print('Fuel Type: $fuelType');
-                        final vehicle = Vehicle(
-                            manufacture: vehicleNameController.text,
-                            consumption: consumption.value,
-                            fuelType: fuelType.value
-                        );
-                        final success = await vehicleService.addVehicle(vehicle);
-                        if (success) {
-                          vehicleNameController.clear();
-                          ccRangeController.clear();
-                          fuelTypeController.clear();
-                          vehicles.add(vehicle);
-                          Get.back();
-                          isLoading.value = false;
-                          Get.snackbar(
-                              'Success',
-                              'Vehicle added successfully',
-                              snackPosition: SnackPosition.BOTTOM,
-                              backgroundColor: Colors.green,
-                              colorText: Colors.white
+                  return SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                        onPressed: (!isLoading.value &&
+                            !vehicleNameEmpty.value &&
+                            consumption.value > 0 &&
+                            fuelType.value.isNotEmpty
+                        ) ? () async {
+                          // TODO: Save vehicle logic and clear fields
+                          isLoading.value = true;
+                          print('Vehicle Name: ${vehicleNameController.text}');
+                          print('Consumption: $consumption L/100km');
+                          print('Fuel Type: $fuelType');
+                          final vehicle = Vehicle(
+                              manufacture: vehicleNameController.text,
+                              consumption: consumption.value,
+                              fuelType: fuelType.value
                           );
-                        } else {
-                          Get.snackbar(
-                              'Error',
-                              'Failed to add vehicle',
-                              snackPosition: SnackPosition.BOTTOM,
-                              backgroundColor: Colors.red,
-                              colorText: Colors.white
-                          );
-                        }
-                      } : null,
-                      child: !isLoading.value
-                          ? const Text('Save Vehicle')
-                          : const Center(
-                          child: CircularProgressIndicator(color: Colors
-                              .white,))
+                          final success = await vehicleService.addVehicle(vehicle);
+                          if (success) {
+                            vehicleNameController.clear();
+                            ccRangeController.clear();
+                            fuelTypeController.clear();
+                            vehicles.add(vehicle);
+                            Get.back();
+                            isLoading.value = false;
+                            Get.snackbar(
+                                'Success',
+                                'Vehicle added successfully',
+                                snackPosition: SnackPosition.BOTTOM,
+                                backgroundColor: Colors.green,
+                                colorText: Colors.white
+                            );
+                          } else {
+                            Get.snackbar(
+                                'Error',
+                                'Failed to add vehicle',
+                                snackPosition: SnackPosition.BOTTOM,
+                                backgroundColor: Colors.red,
+                                colorText: Colors.white
+                            );
+                          }
+                        } : null,
+                        child: !isLoading.value
+                            ? const Text('Save Vehicle')
+                            : const Center(
+                            child: CircularProgressIndicator(color: Colors
+                                .white,))
+                    ),
                   );
                 }),
               ],
