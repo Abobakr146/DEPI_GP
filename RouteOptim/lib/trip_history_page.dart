@@ -87,102 +87,104 @@ class _TripHistoryPageState extends State<TripHistoryPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Trip History')),
-      body: Obx(
-            () => ListView.separated(
-          padding: const EdgeInsets.all(8.0),
-          itemCount: trips.length,
-          separatorBuilder: (context, index) => const SizedBox(height: 8),
-          itemBuilder: (context, index) {
-            final trip = trips[index];
-            final isFav = trip.isFavorite.obs;
-            return Card(
-              margin: const EdgeInsets.symmetric(horizontal: 8.0),
-              elevation: 0.0,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          children: [
-                            const Icon(Icons.directions_car, color: Colors.blue),
-                            const SizedBox(width: 8),
-                            Text(trip.tripName, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            Container(
-                              width: 32,
-                              height: 32,
-                              margin: const EdgeInsets.symmetric(horizontal: 4),
-                              decoration: BoxDecoration(
-                                color: Colors.amber.withValues(alpha: 0.2),
-                                shape: BoxShape.circle,
+      body: SafeArea(
+        child: Obx(
+              () => ListView.separated(
+            padding: const EdgeInsets.all(8.0),
+            itemCount: trips.length,
+            separatorBuilder: (context, index) => const SizedBox(height: 8),
+            itemBuilder: (context, index) {
+              final trip = trips[index];
+              final isFav = trip.isFavorite.obs;
+              return Card(
+                margin: const EdgeInsets.symmetric(horizontal: 8.0),
+                elevation: 0.0,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              const Icon(Icons.directions_car, color: Colors.blue),
+                              const SizedBox(width: 8),
+                              Text(trip.tripName, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              Container(
+                                width: 32,
+                                height: 32,
+                                margin: const EdgeInsets.symmetric(horizontal: 4),
+                                decoration: BoxDecoration(
+                                  color: Colors.amber.withValues(alpha: 0.2),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: IconButton(
+                                  padding: EdgeInsets.zero,
+                                  icon:
+                                  Obx(() => Icon(isFav.value ? Icons.star : Icons.star_border, color: Colors.amber, size: 20)),
+                                  onPressed: () {
+                                    isFav.value = !trip.isFavorite;
+                                    trip.isFavorite = isFav.value; // Update the trip's isFavorite property
+                                  },
+                                ),
                               ),
-                              child: IconButton(
-                                padding: EdgeInsets.zero,
-                                icon:
-                                Obx(() => Icon(isFav.value ? Icons.star : Icons.star_border, color: Colors.amber, size: 20)),
-                                onPressed: () {
-                                  isFav.value = !trip.isFavorite;
-                                  trip.isFavorite = isFav.value; // Update the trip's isFavorite property
-                                },
+                              Container(
+                                width: 32,
+                                height: 32,
+                                margin: const EdgeInsets.symmetric(horizontal: 4),
+                                decoration: BoxDecoration(
+                                  color: Colors.red.withValues(alpha: 0.1),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: IconButton(
+                                  padding: EdgeInsets.zero,
+                                  icon: const Icon(Icons.delete, color: Colors.red, size: 20),
+                                  onPressed: () {
+                                    trips.removeAt(index);
+                                  },
+                                ),
                               ),
-                            ),
-                            Container(
-                              width: 32,
-                              height: 32,
-                              margin: const EdgeInsets.symmetric(horizontal: 4),
-                              decoration: BoxDecoration(
-                                color: Colors.red.withValues(alpha: 0.1),
-                                shape: BoxShape.circle,
-                              ),
-                              child: IconButton(
-                                padding: EdgeInsets.zero,
-                                icon: const Icon(Icons.delete, color: Colors.red, size: 20),
-                                onPressed: () {
-                                  trips.removeAt(index);
-                                },
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        const Icon(Icons.calendar_today, size: 16, color: Colors.black54),
-                        const SizedBox(width: 8),
-                        Text(
-                          '${_getMonthAbbreviation(trip.timestamp.month)} ${trip.timestamp.day}, ${trip.timestamp.year}',
-                          style: const TextStyle(color: Colors.black54),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    ..._buildWaypoints(trip.wayPoints),
-                    const SizedBox(height: 16),
-                    const Divider(),
-                    const SizedBox(height: 8),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        _buildStatColumn('Distance', '${trip.distance} km'),
-                        _buildStatColumn('Fuel', '${trip.fuelUsed} L'),
-                        _buildStatColumn('Cost', '\$${trip.cost.toStringAsFixed(2)}'),
-                      ],
-                    ),
-                  ],
+                            ],
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          const Icon(Icons.calendar_today, size: 16, color: Colors.black54),
+                          const SizedBox(width: 8),
+                          Text(
+                            '${_getMonthAbbreviation(trip.timestamp.month)} ${trip.timestamp.day}, ${trip.timestamp.year}',
+                            style: const TextStyle(color: Colors.black54),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      ..._buildWaypoints(trip.wayPoints),
+                      const SizedBox(height: 16),
+                      const Divider(),
+                      const SizedBox(height: 8),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          _buildStatColumn('Distance', '${trip.distance} km'),
+                          _buildStatColumn('Fuel', '${trip.fuelUsed} L'),
+                          _buildStatColumn('Cost', '\$${trip.cost.toStringAsFixed(2)}'),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            );
-          },
+              );
+            },
+          ),
         ),
       ),
     );

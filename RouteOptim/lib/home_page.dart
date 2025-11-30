@@ -75,10 +75,16 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         title: ListTile(
+          leading: SizedBox(
+            width: 40,
+            height: 40,
+            child: Image.asset('assets/images/logo.png'),
+          ),
           title: const Text(
             'RouteOptim',
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
           ),
+          subtitle: Text('Welcome, ${user?.name.split(' ').first ?? 'Guest'}!'),
           trailing: IconButton(
             onPressed: () {
               Get.to(() => ProfilePage());
@@ -96,14 +102,13 @@ class _HomePageState extends State<HomePage> {
               children: [
                 Card(
                   margin: const EdgeInsets.symmetric(vertical: 10),
-                  color: const Color(0xFF0F2CE8),
+                  // color: const Color(0xFF0F2CE8),
                   child: Column(
                     children: [
                       ListTile(
                         leading: const Text(
                           'Last Trip',
                           style: TextStyle(
-                            color: Colors.white,
                             fontSize: 16,
                             // fontWeight: FontWeight.bold,
                           ),
@@ -112,7 +117,7 @@ class _HomePageState extends State<HomePage> {
                             onPressed: (){
                               Get.to(() => const TripHistoryPage());
                             },
-                            icon: const Icon(Icons.history, color: Colors.white,)
+                            icon: const Icon(Icons.history)
                         )
                       ),
                       Obx(
@@ -120,7 +125,6 @@ class _HomePageState extends State<HomePage> {
                             ? Text(
                                 trips.last.tripName,
                                 style: const TextStyle(
-                                  color: Colors.white,
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -129,7 +133,6 @@ class _HomePageState extends State<HomePage> {
                                 child: Text(
                                   'No trips yet. Start your first trip!',
                                   style: TextStyle(
-                                    color: Colors.white,
                                     fontSize: 16,
                                     // fontWeight: FontWeight.bold,
                                   ),
@@ -149,14 +152,10 @@ class _HomePageState extends State<HomePage> {
                                   const Text(
                                     'Distance',
                                     style: TextStyle(
-                                      color: Colors.white,
                                     ),
                                   ),
                                   Text(
                                     '${trips.last.distance} km',
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                    ),
                                   ),
                                 ],
                               ),
@@ -167,14 +166,10 @@ class _HomePageState extends State<HomePage> {
                                   const Text(
                                     'Fuel Saved',
                                     style: TextStyle(
-                                      color: Colors.white,
                                     ),
                                   ),
                                   Text(
                                     '${trips.last.fuelSaved} L',
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                    ),
                                   ),
                                 ],
                               ),
@@ -184,15 +179,9 @@ class _HomePageState extends State<HomePage> {
                                 children: [
                                   const Text(
                                     'Money Saved',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                    ),
                                   ),
                                   Text(
                                     '\$${trips.last.moneySaved}',
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                    ),
                                   ),
                                 ],
                               ),
@@ -210,7 +199,6 @@ class _HomePageState extends State<HomePage> {
                   style: TextStyle(fontSize: 16),
                 ),
                 Card(
-                  color: Colors.white,
                   child: Center(
                     child: ListTile(
                       leading: const Icon(
@@ -230,7 +218,6 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
                 Card(
-                  color: Colors.white,
                   child: Center(
                     child: ListTile(
                       leading: const Icon(
@@ -279,7 +266,6 @@ class _HomePageState extends State<HomePage> {
     return Card(
       shadowColor: Colors.grey,
       elevation: 4,
-      color: Colors.white,
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(

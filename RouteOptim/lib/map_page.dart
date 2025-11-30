@@ -16,8 +16,6 @@ class MapDirectionsPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Map and Directions'),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
         elevation: 1,
         actions: [
           Obx(() {
@@ -34,168 +32,173 @@ class MapDirectionsPage extends StatelessWidget {
           }),
         ],
       ),
-      body: Column(
-        children: [
-          Container(
-            constraints: BoxConstraints(
-              maxHeight: MediaQuery.of(context).size.height * 0.35,
-            ),
-            child: SingleChildScrollView(
-              controller: controller.scrollController,
-              child: Container(
-                color: Colors.white,
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  children: [
-                    _SearchField(
-                      controller: controller.currentLocationController,
-                      icon: Icons.location_on,
-                      iconColor: Colors.green,
-                      hint: 'Your current location',
-                      index: -1,
-                      mapController: controller,
-                    ),
-                    const SizedBox(height: 12),
-                    Obx(
-                      () => ListView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: controller.waypointControllers.length,
-                        itemBuilder: (context, index) {
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 12),
-                            child: _SearchField(
-                              controller: controller.waypointControllers[index],
-                              icon: Icons.location_pin,
-                              iconColor: Colors.orange,
-                              hint: 'Waypoint ${index + 1}',
-                              index: index,
-                              mapController: controller,
-                              showRemove: true,
-                              onRemove: () => controller.removeWaypoint(index),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    OutlinedButton.icon(
-                      onPressed: controller.addWaypoint,
-                      icon: const Icon(Icons.add_location_alt, size: 18),
-                      label: const Text('Add Waypoint'),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: Colors.blue,
-                        side: BorderSide(color: Colors.blue.shade300),
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    _SearchField(
-                      controller: controller.destinationController,
-                      icon: Icons.navigation,
-                      iconColor: Colors.red,
-                      hint: 'Enter destination location',
-                      index: -2,
-                      mapController: controller,
-                    ),
-                    Obx(() {
-                      if (controller.distance.value != null) {
-                        return Container(
-                          margin: const EdgeInsets.only(top: 12),
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: Colors.blue.shade50,
-                            border: Border.all(color: Colors.blue.shade200),
-                            borderRadius: BorderRadius.circular(12),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              Container(
+                constraints: BoxConstraints(
+                  maxHeight: MediaQuery.of(context).size.height * 0.35,
+                ),
+                child: SingleChildScrollView(
+                  controller: controller.scrollController,
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      children: [
+                        _SearchField(
+                          controller: controller.currentLocationController,
+                          icon: Icons.location_on,
+                          iconColor: Colors.green,
+                          hint: 'Your current location',
+                          index: -1,
+                          mapController: controller,
+                        ),
+                        const SizedBox(height: 12),
+                        Obx(
+                          () => ListView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: controller.waypointControllers.length,
+                            itemBuilder: (context, index) {
+                              return Padding(
+                                padding: const EdgeInsets.only(bottom: 12),
+                                child: _SearchField(
+                                  controller: controller.waypointControllers[index],
+                                  icon: Icons.location_pin,
+                                  iconColor: Colors.orange,
+                                  hint: 'Waypoint ${index + 1}',
+                                  index: index,
+                                  mapController: controller,
+                                  showRemove: true,
+                                  onRemove: () => controller.removeWaypoint(index),
+                                ),
+                              );
+                            },
                           ),
-                          child: Row(
-                            children: [
-                              Icon(Icons.route, color: Colors.blue.shade700),
-                              const SizedBox(width: 12),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                        ),
+                        const SizedBox(height: 12),
+                        OutlinedButton.icon(
+                          onPressed: controller.addWaypoint,
+                          icon: const Icon(Icons.add_location_alt, size: 18),
+                          label: const Text('Add Waypoint'),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: Colors.blue,
+                            side: BorderSide(color: Colors.blue.shade300),
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        _SearchField(
+                          controller: controller.destinationController,
+                          icon: Icons.navigation,
+                          iconColor: Colors.red,
+                          hint: 'Enter destination location',
+                          index: -2,
+                          mapController: controller,
+                        ),
+                        Obx(() {
+                          if (controller.distance.value != null) {
+                            return Container(
+                              margin: const EdgeInsets.only(top: 12),
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: Colors.blue.shade50,
+                                border: Border.all(color: Colors.blue.shade200),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Row(
                                 children: [
-                                  Text(
-                                    'Total Distance',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.grey.shade600,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    '${controller.distance.value} km',
-                                    style: const TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.blue,
-                                    ),
+                                  Icon(Icons.route, color: Colors.blue.shade700),
+                                  const SizedBox(width: 12),
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Total Distance',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.grey.shade600,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        '${controller.distance.value} km',
+                                        style: const TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.blue,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ],
                               ),
-                            ],
+                            );
+                          }
+                          return const SizedBox.shrink();
+                        }),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Stack(
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: FlutterMap(
+                        mapController: controller.mapController,
+                        options: MapOptions(
+                          initialCenter: const LatLng(30.0444, 31.2357),
+                          initialZoom: 12,
+                          onTap: controller.onMapTap,
+                        ),
+                        children: [
+                          TileLayer(
+                            urlTemplate:
+                                'https://api.mapbox.com/styles/v1/mapbox/streets-v12/tiles/{z}/{x}/{y}?access_token={accessToken}',
+                            additionalOptions: const {
+                              'accessToken': MAPBOX_ACCESS_TOKEN,
+                            },
+                            userAgentPackageName: 'com.example.map_directions_app',
+                            tileProvider: NetworkTileProvider(),
                           ),
-                        );
-                      }
-                      return const SizedBox.shrink();
-                    }),
+                          const RichAttributionWidget(
+                            attributions: [
+                              TextSourceAttribution('© Mapbox'),
+                              TextSourceAttribution('© OpenStreetMap'),
+                            ],
+                            alignment: AttributionAlignment.bottomRight,
+                          ),
+                          Obx(
+                            () => controller.routePoints.isEmpty
+                                ? const SizedBox.shrink()
+                                : PolylineLayer(
+                                    polylines: [
+                                      Polyline(
+                                        points: controller.routePoints,
+                                        color: Colors.blue,
+                                        strokeWidth: 5,
+                                      ),
+                                    ],
+                                  ),
+                          ),
+                          Obx(
+                            () => MarkerLayer(markers: _buildMarkers(controller)),
+                          ),
+                        ],
+                      ),
+                    ),
+                    _MapSelectionIndicator(controller: controller),
+                    _EmptyStateIndicator(controller: controller),
                   ],
                 ),
               ),
-            ),
+            ],
           ),
-          Expanded(
-            child: Stack(
-              children: [
-                RepaintBoundary(
-                  child: FlutterMap(
-                    mapController: controller.mapController,
-                    options: MapOptions(
-                      initialCenter: const LatLng(30.0444, 31.2357),
-                      initialZoom: 12,
-                      onTap: controller.onMapTap,
-                    ),
-                    children: [
-                      TileLayer(
-                        urlTemplate:
-                            'https://api.mapbox.com/styles/v1/mapbox/streets-v12/tiles/{z}/{x}/{y}?access_token={accessToken}',
-                        additionalOptions: const {
-                          'accessToken': MAPBOX_ACCESS_TOKEN,
-                        },
-                        userAgentPackageName: 'com.example.map_directions_app',
-                        tileProvider: NetworkTileProvider(),
-                      ),
-                      const RichAttributionWidget(
-                        attributions: [
-                          TextSourceAttribution('© Mapbox'),
-                          TextSourceAttribution('© OpenStreetMap'),
-                        ],
-                        alignment: AttributionAlignment.bottomRight,
-                      ),
-                      Obx(
-                        () => controller.routePoints.isEmpty
-                            ? const SizedBox.shrink()
-                            : PolylineLayer(
-                                polylines: [
-                                  Polyline(
-                                    points: controller.routePoints,
-                                    color: Colors.blue,
-                                    strokeWidth: 5,
-                                  ),
-                                ],
-                              ),
-                      ),
-                      Obx(
-                        () => MarkerLayer(markers: _buildMarkers(controller)),
-                      ),
-                    ],
-                  ),
-                ),
-                _MapSelectionIndicator(controller: controller),
-                _EmptyStateIndicator(controller: controller),
-              ],
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -275,94 +278,176 @@ class _SearchField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Container(
-          decoration: BoxDecoration(
-            color: Colors.grey.shade100,
-            border: Border.all(color: Colors.grey.shade300),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Row(
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 12),
-                child: Icon(icon, color: iconColor, size: 20),
-              ),
-              Expanded(
-                child: TextField(
-                  controller: controller,
-                  onChanged: (value) {
-                    mapController.onSearchChanged(value, index);
-                    // Show suggestions when typing
-                    if (index == -1) {
-                      mapController.showCurrentSuggestions.value = true;
-                    } else if (index == -2) {
-                      mapController.showDestSuggestions.value = true;
-                    } else {
-                      if (index <
-                          mapController.showWaypointSuggestions.length) {
-                        mapController.showWaypointSuggestions[index] = true;
-                        mapController.showWaypointSuggestions.refresh();
-                      }
-                    }
-                  },
-                  onTap: () {
-                    // Show suggestions when tapping the field
-                    if (index == -1) {
-                      mapController.showCurrentSuggestions.value = true;
-                      // Trigger search if there's already text
-                      if (controller.text.isNotEmpty) {
-                        mapController.searchLocation(controller.text, index);
-                      }
-                    } else if (index == -2) {
-                      mapController.showDestSuggestions.value = true;
-                      if (controller.text.isNotEmpty) {
-                        mapController.searchLocation(controller.text, index);
-                      }
-                    } else {
-                      if (index <
-                          mapController.showWaypointSuggestions.length) {
-                        mapController.showWaypointSuggestions[index] = true;
-                        mapController.showWaypointSuggestions.refresh();
-                        if (controller.text.isNotEmpty) {
-                          mapController.searchLocation(controller.text, index);
+    return SafeArea(
+      child: Column(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              // color: Colors.grey.shade100,
+              border: Border.all(color: Colors.grey.shade300),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                spacing: 8,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(left: 12),
+                    child: Icon(icon, color: iconColor, size: 20),
+                  ),
+                  Expanded(
+                    child: TextField(
+                      controller: controller,
+                      onChanged: (value) {
+                        mapController.onSearchChanged(value, index);
+                        // Show suggestions when typing
+                        if (index == -1) {
+                          mapController.showCurrentSuggestions.value = true;
+                        } else if (index == -2) {
+                          mapController.showDestSuggestions.value = true;
+                        } else {
+                          if (index <
+                              mapController.showWaypointSuggestions.length) {
+                            mapController.showWaypointSuggestions[index] = true;
+                            mapController.showWaypointSuggestions.refresh();
+                          }
                         }
-                      }
-                    }
-                  },
-                  decoration: InputDecoration(
-                    hintText: hint,
-                    hintStyle: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey.shade600,
-                    ),
-                    border: InputBorder.none,
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 14,
+                      },
+                      onTap: () {
+                        // Show suggestions when tapping the field
+                        if (index == -1) {
+                          mapController.showCurrentSuggestions.value = true;
+                          // Trigger search if there's already text
+                          if (controller.text.isNotEmpty) {
+                            mapController.searchLocation(controller.text, index);
+                          }
+                        } else if (index == -2) {
+                          mapController.showDestSuggestions.value = true;
+                          if (controller.text.isNotEmpty) {
+                            mapController.searchLocation(controller.text, index);
+                          }
+                        } else {
+                          if (index <
+                              mapController.showWaypointSuggestions.length) {
+                            mapController.showWaypointSuggestions[index] = true;
+                            mapController.showWaypointSuggestions.refresh();
+                            if (controller.text.isNotEmpty) {
+                              mapController.searchLocation(controller.text, index);
+                            }
+                          }
+                        }
+                      },
+                      decoration: InputDecoration(
+                        hintText: hint,
+                        hintStyle: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey.shade600,
+                        ),
+                        border: InputBorder.none,
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 14,
+                        ),
+                      ),
                     ),
                   ),
-                ),
-              ),
-              IconButton(
-                icon: Icon(Icons.map, size: 20, color: Colors.blue.shade600),
-                onPressed: () => mapController.enableMapSelection(index),
-                tooltip: 'Select from map',
-              ),
-              ValueListenableBuilder<TextEditingValue>(
-                valueListenable: controller,
-                builder: (context, value, child) {
-                  if (value.text.isNotEmpty) {
-                    return IconButton(
-                      icon: Icon(
-                        Icons.close,
-                        size: 18,
-                        color: Colors.grey.shade400,
+                  IconButton(
+                    icon: Icon(Icons.map, size: 20, color: Colors.blue.shade600),
+                    onPressed: () => mapController.enableMapSelection(index),
+                    tooltip: 'Select from map',
+                  ),
+                  ValueListenableBuilder<TextEditingValue>(
+                    valueListenable: controller,
+                    builder: (context, value, child) {
+                      if (value.text.isNotEmpty) {
+                        return IconButton(
+                          icon: Icon(
+                            Icons.close,
+                            size: 18,
+                            color: Colors.grey.shade400,
+                          ),
+                          onPressed: () {
+                            mapController.clearLocation(index);
+                            // Hide suggestions when clearing
+                            if (index == -1) {
+                              mapController.showCurrentSuggestions.value = false;
+                            } else if (index == -2) {
+                              mapController.showDestSuggestions.value = false;
+                            } else {
+                              if (index <
+                                  mapController.showWaypointSuggestions.length) {
+                                mapController.showWaypointSuggestions[index] =
+                                    false;
+                                mapController.showWaypointSuggestions.refresh();
+                              }
+                            }
+                          },
+                        );
+                      }
+                      return const SizedBox.shrink();
+                    },
+                  ),
+                  if (showRemove && onRemove != null)
+                    IconButton(
+                      icon: const Icon(
+                        Icons.remove_circle,
+                        size: 20,
+                        color: Colors.red,
                       ),
-                      onPressed: () {
-                        mapController.clearLocation(index);
-                        // Hide suggestions when clearing
+                      onPressed: onRemove,
+                      tooltip: 'Remove waypoint',
+                    ),
+                ],
+              ),
+            ),
+          ),
+          Obx(() {
+            List<LocationSuggestion> suggestions;
+            bool showSuggestions;
+
+            if (index == -1) {
+              suggestions = mapController.currentSuggestions;
+              showSuggestions = mapController.showCurrentSuggestions.value;
+            } else if (index == -2) {
+              suggestions = mapController.destSuggestions;
+              showSuggestions = mapController.showDestSuggestions.value;
+            } else {
+              suggestions = mapController.waypointSuggestions.length > index
+                  ? mapController.waypointSuggestions[index]
+                  : [];
+              showSuggestions =
+                  mapController.showWaypointSuggestions.length > index
+                  ? mapController.showWaypointSuggestions[index]
+                  : false;
+            }
+
+            if (showSuggestions && suggestions.isNotEmpty) {
+              return Container(
+                margin: const EdgeInsets.only(top: 4),
+                decoration: BoxDecoration(
+                  // color: Colors.white,
+                  // border: Border.all(color: Colors.grey.shade200),
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 8,
+                    ),
+                  ],
+                ),
+                constraints: const BoxConstraints(maxHeight: 200),
+                child: ListView.separated(
+                  shrinkWrap: true,
+                  itemCount: suggestions.length,
+                  separatorBuilder: (context, idx) =>
+                      Divider(height: 1, color: Colors.grey.shade200),
+                  itemBuilder: (context, idx) {
+                    final suggestion = suggestions[idx];
+                    return InkWell(
+                      onTap: () {
+                        mapController.selectLocation(suggestion, index);
+                        // Hide suggestions after selection
                         if (index == -1) {
                           mapController.showCurrentSuggestions.value = false;
                         } else if (index == -2) {
@@ -370,138 +455,62 @@ class _SearchField extends StatelessWidget {
                         } else {
                           if (index <
                               mapController.showWaypointSuggestions.length) {
-                            mapController.showWaypointSuggestions[index] =
-                                false;
+                            mapController.showWaypointSuggestions[index] = false;
                             mapController.showWaypointSuggestions.refresh();
                           }
                         }
                       },
-                    );
-                  }
-                  return const SizedBox.shrink();
-                },
-              ),
-              if (showRemove && onRemove != null)
-                IconButton(
-                  icon: const Icon(
-                    Icons.remove_circle,
-                    size: 20,
-                    color: Colors.red,
-                  ),
-                  onPressed: onRemove,
-                  tooltip: 'Remove waypoint',
-                ),
-            ],
-          ),
-        ),
-        Obx(() {
-          List<LocationSuggestion> suggestions;
-          bool showSuggestions;
-
-          if (index == -1) {
-            suggestions = mapController.currentSuggestions;
-            showSuggestions = mapController.showCurrentSuggestions.value;
-          } else if (index == -2) {
-            suggestions = mapController.destSuggestions;
-            showSuggestions = mapController.showDestSuggestions.value;
-          } else {
-            suggestions = mapController.waypointSuggestions.length > index
-                ? mapController.waypointSuggestions[index]
-                : [];
-            showSuggestions =
-                mapController.showWaypointSuggestions.length > index
-                ? mapController.showWaypointSuggestions[index]
-                : false;
-          }
-
-          if (showSuggestions && suggestions.isNotEmpty) {
-            return Container(
-              margin: const EdgeInsets.only(top: 4),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border.all(color: Colors.grey.shade200),
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 8,
-                  ),
-                ],
-              ),
-              constraints: const BoxConstraints(maxHeight: 200),
-              child: ListView.separated(
-                shrinkWrap: true,
-                itemCount: suggestions.length,
-                separatorBuilder: (context, idx) =>
-                    Divider(height: 1, color: Colors.grey.shade200),
-                itemBuilder: (context, idx) {
-                  final suggestion = suggestions[idx];
-                  return InkWell(
-                    onTap: () {
-                      mapController.selectLocation(suggestion, index);
-                      // Hide suggestions after selection
-                      if (index == -1) {
-                        mapController.showCurrentSuggestions.value = false;
-                      } else if (index == -2) {
-                        mapController.showDestSuggestions.value = false;
-                      } else {
-                        if (index <
-                            mapController.showWaypointSuggestions.length) {
-                          mapController.showWaypointSuggestions[index] = false;
-                          mapController.showWaypointSuggestions.refresh();
-                        }
-                      }
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 12,
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(
-                            mapController.getIconForPlaceType(
-                              suggestion.placeType,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              mapController.getIconForPlaceType(
+                                suggestion.placeType,
+                              ),
+                              size: 20,
+                              color: Colors.grey.shade600,
                             ),
-                            size: 20,
-                            color: Colors.grey.shade600,
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                if (suggestion.placeName != null)
-                                  Text(
-                                    suggestion.placeName!,
-                                    style: const TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w500,
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  if (suggestion.placeName != null)
+                                    Text(
+                                      suggestion.placeName!,
+                                      style: const TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.w500,
+                                      ),
                                     ),
+                                  Text(
+                                    suggestion.displayName,
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      color: Colors.grey.shade600,
+                                    ),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
-                                Text(
-                                  suggestion.displayName,
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    color: Colors.grey.shade600,
-                                  ),
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                  );
-                },
-              ),
-            );
-          }
-          return const SizedBox.shrink();
-        }),
-      ],
+                    );
+                  },
+                ),
+              );
+            }
+            return const SizedBox.shrink();
+          }),
+        ],
+      ),
     );
   }
 }
@@ -519,14 +528,17 @@ class _MarkerWidget extends StatelessWidget {
       decoration: BoxDecoration(
         color: color,
         shape: BoxShape.circle,
-        border: Border.all(color: Colors.white, width: 3),
+        border: Border.all(
+            // color: Colors.white,
+            width: 3
+        ),
         boxShadow: const [BoxShadow(color: Colors.black26, blurRadius: 6)],
       ),
       child: Center(
         child: Text(
           label,
           style: const TextStyle(
-            color: Colors.white,
+            // color: Colors.white,
             fontWeight: FontWeight.bold,
             fontSize: 16,
           ),
@@ -573,12 +585,16 @@ class _MapSelectionIndicator extends StatelessWidget {
               child: const Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.touch_app, color: Colors.white, size: 20),
+                  Icon(
+                      Icons.touch_app,
+                      // color: Colors.white,
+                      size: 20
+                  ),
                   SizedBox(width: 8),
                   Text(
                     'Tap on map to select location',
                     style: TextStyle(
-                      color: Colors.white,
+                      // color: Colors.white,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -616,7 +632,7 @@ class _EmptyStateIndicator extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
-                color: Colors.white,
+                // color: Colors.white,
                 borderRadius: BorderRadius.circular(8),
                 boxShadow: const [
                   BoxShadow(color: Colors.black12, blurRadius: 8),

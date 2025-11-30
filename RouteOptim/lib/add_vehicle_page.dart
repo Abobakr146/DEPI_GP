@@ -179,10 +179,9 @@ class _AddVehiclePageState extends State<AddVehiclePage> {
                 ),
                 Obx(() {
                   return ElevatedButton(
-                      // style: ElevatedButton.styleFrom(
-                      //   disabledBackgroundColor: Colors.grey,
-                      //   disabledForegroundColor: Colors.grey,
-                      // ),
+                      style: ElevatedButton.styleFrom(
+                        iconSize: double.infinity,
+                      ),
                       onPressed: (!isLoading.value &&
                           !vehicleNameEmpty.value &&
                           consumption.value > 0 &&

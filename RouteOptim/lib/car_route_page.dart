@@ -240,12 +240,17 @@ class _CarRoutePageState extends State<CarRoutePage> {
                                 ),
                               )
                             : const SizedBox.shrink(),
-                        ElevatedButton.icon(
+                        OutlinedButton.icon(
                           onPressed: () {
                             waypoints.add(TextEditingController());
                           },
-                          icon: const Icon(Icons.add),
-                          label: const Text("Add Waypoint"),
+                          icon: const Icon(Icons.add, color: Colors.green),
+                          label: const Text("Add Waypoint", style: TextStyle(color: Colors.green),),
+                          style: OutlinedButton.styleFrom(
+                            side: BorderSide(
+                              color: Colors.green.withValues(alpha: 0.6),
+                            ),
+                          ),
                         ),
                         Card(
                           margin: const EdgeInsets.only(bottom: 10),
@@ -306,14 +311,15 @@ class _CarRoutePageState extends State<CarRoutePage> {
                             ),
                           ),
                         ),
-                        const SizedBox(height: 12),
+                        // const SizedBox(height: 8),
                         SizedBox(
                           height: 300,
                           child: Card(
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                                // mainAxisAlignment: MainAxisAlignment.center,
+                                // crossAxisAlignment: CrossAxisAlignment.center,
                                 spacing: 8,
                                 children: [
                                   const Text('Choose Vehicle'),
@@ -338,12 +344,20 @@ class _CarRoutePageState extends State<CarRoutePage> {
                                       }
                                     }),
                                   ),
-                                  ElevatedButton.icon(
-                                    onPressed: () {
-                                      Get.to(() => const AddVehiclePage());
-                                    },
-                                    label: const Text('Add New Vehicle'),
-                                    icon: const Icon(Icons.add),
+                                  SizedBox(
+                                    width: double.infinity,
+                                    child: OutlinedButton.icon(
+                                      onPressed: () {
+                                        Get.to(() => const AddVehiclePage());
+                                      },
+                                      label: const Text('Add New Vehicle', style: TextStyle(color: Colors.green),),
+                                      icon: const Icon(Icons.add, color: Colors.green),
+                                      style: OutlinedButton.styleFrom(
+                                        side: BorderSide(
+                                          color: Colors.green.withValues(alpha: 0.6),
+                                        ),
+                                      ),
+                                    ),
                                   ),
                                 ],
                               ),
@@ -454,24 +468,24 @@ class _CarRoutePageState extends State<CarRoutePage> {
       final bool isSelected = vehicle == selectedVehicle.value;
       return Card(
         margin: const EdgeInsets.only(bottom: 8),
-        color: isSelected ? const Color(0x9677A3F1) : Colors.white,
+        color: isSelected ? const Color(0x9677A3F1) : null,
         child: ListTile(
           onTap: () {
             selectedVehicle.value = vehicle;
             vehiclesSelected.value = true;
           },
           trailing: isSelected
-              ? const Icon(Icons.check_circle, color: Colors.blueAccent)
+              ? const Icon(Icons.check_circle, color: Colors.white)
               : null,
           leading: Icon(
             Icons.directions_car,
-            color: isSelected ? Colors.blueAccent : Colors.black,
+            color: isSelected ? Colors.white : null,
           ),
           title: Text(
             vehicle.manufacture,
             style: TextStyle(
               fontWeight: FontWeight.bold,
-              color: isSelected ? Colors.blueAccent : Colors.black,
+              color: isSelected ? Colors.white : null,
             ),
           ),
           subtitle: Wrap(
@@ -481,24 +495,24 @@ class _CarRoutePageState extends State<CarRoutePage> {
               Text(
                 '${vehicle.consumption} L/100km',
                 style: TextStyle(
-                  color: isSelected ? Colors.blueAccent : Colors.black,
+                  color: isSelected ? Colors.white : Colors.black,
                 ),
               ),
               Icon(
                 Icons.circle,
                 size: 6,
-                color: isSelected ? Colors.blueAccent : Colors.black,
+                color: isSelected ? Colors.white : Colors.black,
               ),
               Text(
                 vehicle.fuelType,
                 style: TextStyle(
-                  color: isSelected ? Colors.blueAccent : Colors.black,
+                  color: isSelected ? Colors.white : Colors.black,
                 ),
               ),
               Icon(
                 Icons.circle,
                 size: 6,
-                color: isSelected ? Colors.blueAccent : Colors.black,
+                color: isSelected ? Colors.white : Colors.black,
               ),
               // Emission label
               () {

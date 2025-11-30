@@ -61,7 +61,6 @@ class _LoginPageState extends State<LoginPage> {
                   const Text('Sign in to access portal'),
                   const SizedBox(height: 20,),
                   Card(
-                    color: Colors.white,
                     child: Padding(
                         padding: const EdgeInsets.all(12.0),
                         child: Column(
@@ -191,7 +190,6 @@ class _LoginPageState extends State<LoginPage> {
                 }
               } : null,
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.black,
                 minimumSize: const Size(double.infinity, 50),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -335,7 +333,6 @@ class _LoginPageState extends State<LoginPage> {
                 }
               } : null,
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.black,
                 minimumSize: const Size(double.infinity, 50),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),

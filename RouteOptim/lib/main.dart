@@ -15,6 +15,7 @@ Future<void> main() async {
 }
 
 final cloud = Supabase.instance.client;
+final theme = Get.theme.brightness.obs;
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -23,7 +24,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
+      themeMode: ThemeMode.light,
       theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
       home: LoginPage(),
       title: 'Route Optimization',
     );
