@@ -3,6 +3,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'dart:async';
 import 'package:get/get.dart';
+import 'package:route_optim/route_optim.dart';
 import 'map_service.dart';
 import 'geocoding_response.dart';
 
@@ -263,33 +264,6 @@ class MapDirectionsController extends GetxController {
     }
   }
 
-  Future<void> calculateRouteWithWaypoints() async {
-    List<LatLng> coordinates = [];
-    coordinates.add(LatLng(selectedStart.value!.lat, selectedStart.value!.lon));
-
-    for (var waypoint in selectedWaypoints) {
-      if (waypoint != null) {
-        coordinates.add(LatLng(waypoint.lat, waypoint.lon));
-      }
-    }
-
-    coordinates.add(LatLng(selectedEnd.value!.lat, selectedEnd.value!.lon));
-
-    final response = await _mapService.calculateRoute(coordinates);
-    if (response != null && response.routes.isNotEmpty) {
-      final route = response.routes.first;
-      final coords = route.geometry.coordinates;
-      final distanceKm = (route.distance / 1000);
-
-      routePoints.value = coords
-          .map((coord) => LatLng(coord[1], coord[0]))
-          .toList();
-      distance.value = double.parse(distanceKm.toStringAsFixed(2));
-
-      fitBoundsToAllPoints();
-    }
-  }
-
   void fitBoundsToAllPoints() {
     List<LatLng> allPoints = [];
     if (selectedStart.value != null) {
@@ -327,6 +301,42 @@ class MapDirectionsController extends GetxController {
     }
     distance.value = null;
     routePoints.clear();
+  }
+
+  Future<void> calculateRouteWithWaypoints() async {
+    // Collect all waypoint coordinates
+    List<LatLng> waypointCoords = [];
+    for (var waypoint in selectedWaypoints) {
+      if (waypoint != null) {
+        waypointCoords.add(LatLng(waypoint.lat, waypoint.lon));
+      }
+    }
+
+    // Optimize route order using Nearest Neighbor algorithm
+    final optimizedRoute = RouteOptimizer.optimizeRouteWithWaypoints(
+      start: LatLng(selectedStart.value!.lat, selectedStart.value!.lon),
+      waypoints: waypointCoords,
+      end: LatLng(selectedEnd.value!.lat, selectedEnd.value!.lon),
+      printDebug: true,
+    );
+
+    print('📍 Optimizing route with ${waypointCoords.length} waypoints');
+    print('✅ Optimized route has ${optimizedRoute.length} points');
+
+    // Call OSRM with optimized order
+    final response = await _mapService.calculateRoute(optimizedRoute);
+    if (response != null && response.routes.isNotEmpty) {
+      final route = response.routes.first;
+      final coords = route.geometry.coordinates;
+      final distanceKm = (route.distance / 1000);
+
+      routePoints.value = coords
+          .map((coord) => LatLng(coord[1], coord[0]))
+          .toList();
+      distance.value = double.parse(distanceKm.toStringAsFixed(2));
+
+      fitBoundsToAllPoints();
+    }
   }
 
   List<String> getSelectedLocationsAndDistanceList() {
